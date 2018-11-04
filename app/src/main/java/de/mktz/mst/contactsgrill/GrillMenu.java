@@ -63,13 +63,13 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+        /*findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadContactsAndShowDebug();
             }
         });
-        loadContactsAndShowDebug();
+        loadContactsAndShowDebug();*/
 
         DB_ContactLoader update = new DB_ContactLoader(this);
         update.UpdateContactsInDB();
@@ -83,7 +83,7 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
     }
 
 
-    private void loadContactsAndShowDebug(){
+    /*private void loadContactsAndShowDebug(){
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
@@ -110,7 +110,7 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
                         String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                         String lookup = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                         //String lookupURI = ContactsContract.Contacts.getLookupUri((long) cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID)), lookup).toString();
-                        builder.append(id).append(": Name : ").append(name).append(" LOOKUP : ").append(lookup)/*.append("\n LOOKUP_URI : ").append(lookupURI)*/.append("\n");
+                        builder.append(id).append(": Name : ").append(name).append(" LOOKUP : ").append(lookup).append("\n LOOKUP_URI : ").append(lookupURI).append("\n");
                     }
                 }
                 else builder.append("No Contacts");
@@ -120,7 +120,7 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
                 ((TextView) findViewById(R.id.textView5)).setText(e.getMessage());
             }
         }
-    }
+    } */
 
     @Override
     public void onBackPressed() {
@@ -167,7 +167,7 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
                 Intent myIntent = new Intent(this, ContactSearch.class);
                 startActivity(myIntent);
             }catch (Exception e) {
-                ((TextView) findViewById(R.id.textView5)).setText(e.getMessage());
+                //((TextView) findViewById(R.id.textView5)).setText(e.getMessage());
             }
         } else if (id == R.id.nav_slideshow) {
 
