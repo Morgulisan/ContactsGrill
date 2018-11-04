@@ -25,6 +25,7 @@ public class DB_Handler extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
+
     }
 
     @Override
@@ -80,6 +81,18 @@ public class DB_Handler extends SQLiteOpenHelper{
         return values;
     }
 
+    public DB_Contact getContactByID(long contactID){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("contacts",null,"id=?",new String[]{String.valueOf(contactID)},null,null,null);
+        int indexID = cursor.getColumnIndex("id");
+        int indexName = cursor.getColumnIndex("name");
+        int indexTrack = cursor.getColumnIndex("tracked");
+        cursor.moveToFirst();
+        DB_Contact rc = new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1);
+        cursor.close();
+        return rc;
+    }
+
     public ArrayList<DB_Contact> getListOfAllContacts(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("contacts",null,null,null,null,null,null);
@@ -99,6 +112,24 @@ public class DB_Handler extends SQLiteOpenHelper{
         return listOfResults;
     }
 
+    public ArrayList<DB_Contact> getListOfTrackedContacts(){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("contacts",null,"tracked=1",null,null,null,null);
+        ArrayList<DB_Contact> listOfResults = new ArrayList<>();
+
+        int indexID = cursor.getColumnIndex("id");
+        int indexName = cursor.getColumnIndex("name");
+        int indexTrack = cursor.getColumnIndex("tracked");
+
+        cursor.moveToFirst();
+        do {
+            listOfResults.add(new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1));
+        } while (cursor.moveToNext());
+        cursor.close();
+        db.close();
+        Log.d("test", "Size of Data: " + listOfResults.size() + "");
+        return listOfResults;
+    }
 
     public int debugRead(){
         SQLiteDatabase db = getReadableDatabase();

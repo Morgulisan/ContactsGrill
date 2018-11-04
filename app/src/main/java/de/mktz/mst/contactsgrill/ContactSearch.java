@@ -29,10 +29,8 @@ public class ContactSearch extends AppCompatActivity {
         setContentView(R.layout.activity_contact_search);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        
         listView = findViewById(R.id.list_contacts_dynamic);
         contactsToMenu();
-
     }
 
     @Override
@@ -60,32 +58,8 @@ public class ContactSearch extends AppCompatActivity {
     public void contactsToMenu(){
         DB_Handler handler = new DB_Handler(this);
         dataModels = handler.getListOfAllContacts();
-        adapter = new  CustomAdapter(dataModels, getApplicationContext());
+        adapter = new  CustomAdapter(dataModels, getApplicationContext(), CustomAdapter.ViewType.VIEW_TOGGLE_TRACK);
         listView.setAdapter(adapter);
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-        } else {
-            dataModels = new ArrayList<>();
-
-            ContentResolver contentResolver = getContentResolver();
-            Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
-
-            assert cursor != null; // explain?
-            if (cursor.getCount() > 0) while (cursor.moveToNext()) {
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                String create = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP));
-                String lastContact = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LAST_TIME_CONTACTED));
-                String contactCount = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.TIMES_CONTACTED));
-                //if(!lastContact.equals("0"))
-                dataModels.add(new ContactCard(name, Long.parseLong(create), Long.parseLong(lastContact), contactCount));
-            }
-            cursor.close();
-
-            adapter = new CustomAdapter(dataModels, getApplicationContext());
-            listView.setAdapter(adapter);
-        }*/
-
     }
 
 }

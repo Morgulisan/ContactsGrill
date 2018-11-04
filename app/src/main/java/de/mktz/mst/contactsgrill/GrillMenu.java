@@ -18,17 +18,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 
+import java.util.ArrayList;
+
+import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
 import de.mktz.mst.contactsgrill.database.DB_ContactLoader;
 
 public class GrillMenu extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 1160;
+
+    ArrayList<DB_Contact> dataModels;
+    ListView listView;
+    protected CustomAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +76,9 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
         DB_Handler handler = new DB_Handler(this);
         Log.d("test",handler.debugRead() + "");
         Log.d("test", handler.debugReadTracked() + "");
+
+        listView = findViewById(R.id.list_contacts_dynamic);
+        contactsToMenu();
 
     }
 
@@ -171,5 +182,12 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void contactsToMenu(){
+        DB_Handler handler = new DB_Handler(this);
+        dataModels = handler.getListOfTrackedContacts();
+        adapter = new  CustomAdapter(dataModels, getApplicationContext(),CustomAdapter.ViewType.VIEW_MAIN);
+        listView.setAdapter(adapter);
     }
 }
