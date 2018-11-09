@@ -18,6 +18,11 @@
     <string name="title_activity_contact_search">ContactSearch</string>
     <string name="title_activity_contact_view">ContactView</string>
 
-    <string name="permission_required">Require Permissions</string>
 
+    <string name="permission_required">Require Permissions</string>
+    
+    <!--Default Strings-->
+    <string name="profile_image">Profile image</string>
+    <string name="default_name">John Doe</string>
+    
 </resources>
