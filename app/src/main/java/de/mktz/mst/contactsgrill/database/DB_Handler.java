@@ -124,7 +124,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         } while (cursor.moveToNext());
         cursor.close();
         db.close();
-        Log.d("test", "Size of Data: " + listOfResults.size() + "");
         return listOfResults;
     }
 
@@ -148,7 +147,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         }
         cursor.close();
         db.close();
-        Log.d("test", "Size of Data: " + listOfResults.size() + "");
         return listOfResults;
     }
 

@@ -35,7 +35,6 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         Switch contactFollowView;
         ImageView contactImageView;
     }
-
     private static class ViewHolderMain{
         TextView contactNameTextView;
         ImageView contactImageView;
@@ -43,7 +42,6 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         TextView contactInfoText;
 
     }
-
     enum ViewType{
         VIEW_MAIN,
         VIEW_TOGGLE_TRACK
@@ -147,10 +145,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         }
         viewHolder.contactedCheck.setChecked(false);
         viewHolder.contactNameTextView.setText(dataModel.getName());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-        Date netDate = (new Date(dataModel.getLastContactTime()));
-        viewHolder.contactInfoText.setText(sdf.format(netDate));
+        viewHolder.contactInfoText.setText(TimestampToDateText(dataModel.getLastContactTime()));
 
         if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
         else viewHolder.contactImageView.setImageDrawable(null);
@@ -172,5 +167,11 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         });
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    private static String TimestampToDateText(long timestamp){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        Date netDate = (new Date(timestamp));
+        return sdf.format(netDate);
     }
 }
