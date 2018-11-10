@@ -22,7 +22,6 @@ public class DB_ContactLoader {
     }
 
     public void UpdateContactsInDB(){
-
         ContentValues lookupValues = db_handler.getLookups();
 
         ContentResolver contentResolver = context.getContentResolver();
@@ -50,25 +49,21 @@ public class DB_ContactLoader {
                 }
                 if(contains){
                     contact = db_handler.getContactByID(contactDbId);
-                    //Log.d("test",  name + "Photo != null && !contact.getPhotoUri().equals(photo)): " + (photo != null ));
+
                     if(photo != null && (contact.getPhotoUri() == null  || !contact.getPhotoUri().equals(photo))){
                         Log.d("test","Updated photo for " + name + " from "  + contact.getPhotoUri() + " to " + photo );
                         contact.setPhotoUri(photo);
                         db_handler.updateContactPhotoURI(contactDbId,photo);
                     }
-                    /*try {
-                        contact.addLookups(lookups);
+                    if(name != null && !contact.getName().equals(name)){
+                        Log.d("test", "Updating Name for " + name + " from " + contact.getName());
+                        contact.setName(name);
+                        db_handler.updateContactName(contactDbId,name);
                     }
-                    catch (Exception e) {
-                        Log.d("test",e.toString());
-                    }
-                    //throw new java.lang.UnsupportedOperationException();
-                    //Update
-                    //add Lookups */
                 }
                 else {
                     contact.setTracked(false);
-                    contact = db_handler.insertContact(contact);
+                    db_handler.insertContact(contact);
                 }
             }while(cursor.moveToNext());
         }

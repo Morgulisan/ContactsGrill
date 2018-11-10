@@ -37,6 +37,7 @@ public class ContactView extends AppCompatActivity {
         if(contactID != -1){
             FillData(contactID);
             getDebugData(contactID);
+            DebugData2(contactID);
         }
     }
 
@@ -90,6 +91,48 @@ public class ContactView extends AppCompatActivity {
                 ((TextView) findViewById(R.id.debugText)).setText(e.getMessage());
             }
         }
+    }
+
+    void DebugData2(long id) {
+        DB_Handler handler = new DB_Handler(this);
+        DB_Contact contact = handler.getContactByID(id);
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n");
+        ContentResolver contentResolver = getContentResolver();
+        Uri uri = ContactsContract.Data.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts._ID,
+                ///ContactsContract.CommonDataKinds.Event.CONTACT_ID,
+                ContactsContract.CommonDataKinds.Event.START_DATE,
+                //ContactsContract.Contacts.PHOTO_URI,
+                //ContactsContract.Contacts.LOOKUP_KEY,
+                ContactsContract.CommonDataKinds.Event.TYPE,
+        };
+        String where = ContactsContract.Contacts.Data.MIMETYPE + "= ?";
+                //ContactsContract.Data.MIMETYPE + "= ? AND " +
+                //        ContactsContract.CommonDataKinds.Event.TYPE + "=" + ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY;
+        String[] selectionArgs = new String[]{ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE};
+
+        Cursor cursor = contentResolver.query(uri, projection, where, selectionArgs, null, null);
+
+        int i = 0;
+        if (cursor.getCount() > 0){
+            while (cursor.moveToNext()) {
+                i++;
+                if(true){//cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equals(contact.getName())) {
+                    int count = cursor.getColumnCount();
+                    while(count-- > 0){
+                        builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
+                    }
+                    builder.append("\n");
+                }
+            }
+        }
+        builder.append("Contacts Found: ").append(i);
+        Log.d("test",builder.toString());
+        cursor.close();
+        ((TextView) findViewById(R.id.debugText)).append(builder.toString());
     }
 
 }

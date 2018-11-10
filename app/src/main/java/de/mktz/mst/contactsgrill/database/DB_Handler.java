@@ -23,7 +23,7 @@ public class DB_Handler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT, birthDay TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
 
     }
@@ -39,6 +39,7 @@ public class DB_Handler extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put("name",c.getName());
         values.put("tracked",c.getTracked());
+        values.put("photoUri", c.getPhotoUri());
 
         long id = db.insert("contacts",null,values);
         c.setId(id);
@@ -70,6 +71,23 @@ public class DB_Handler extends SQLiteOpenHelper{
         this.close();
     }
 
+    public void updateContactBirthday(long id, String birthday){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("birthDay",birthday);
+        db.update("contacts",cv,"id="+id, null);
+        this.close();
+    }
+
+    public void updateContactName(long id, String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("name",name);
+        db.update("contacts",cv,"id="+id, null);
+        this.close();
+    }
+
+
     public ContentValues getLookups(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor;
@@ -96,10 +114,14 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
+        int indexBirthday = cursor.getColumnIndex("birthDay");
         cursor.moveToFirst();
         DB_Contact rc = new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1);
         if(cursor.getString(indexPhoto) != null){
             rc.setPhotoUri(cursor.getString(indexPhoto));
+        }
+        if(indexBirthday != -1 && cursor.getString(indexBirthday) != null) {
+            rc.setBirthday(cursor.getString(indexBirthday));
         }
         cursor.close();
         return rc;
@@ -114,11 +136,15 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
+        int indexBirthday = cursor.getColumnIndex("birthDay");
         cursor.moveToFirst();
         do {
             DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
             if(cursor.getString(indexPhoto) != null){
                 rc.setPhotoUri(cursor.getString(indexPhoto));
+            }
+            if(indexBirthday != -1 && cursor.getString(indexBirthday) != null) {
+                rc.setBirthday(cursor.getString(indexBirthday));
             }
             listOfResults.add(rc);
         } while (cursor.moveToNext());
@@ -136,11 +162,15 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
+        int indexBirthday = cursor.getColumnIndex("birthDay");
         if(cursor.moveToFirst()) {
             do {
                 DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
                 if(cursor.getString(indexPhoto) != null){
                     rc.setPhotoUri(cursor.getString(indexPhoto));
+                }
+                if(indexBirthday != -1 && cursor.getString(indexBirthday) != null) {
+                    rc.setBirthday(cursor.getString(indexBirthday));
                 }
                 listOfResults.add(rc);
             } while (cursor.moveToNext());
@@ -171,7 +201,7 @@ public class DB_Handler extends SQLiteOpenHelper{
         while(cursor.moveToNext()){
             if(cursor.getInt(cursor.getColumnIndex("tracked")) != 0) {
                 i++;
-                Log.d("test",cursor.getString(cursor.getColumnIndex("name")));
+               // Log.d("test",cursor.getString(cursor.getColumnIndex("name")));
             }
         }
         cursor.close();

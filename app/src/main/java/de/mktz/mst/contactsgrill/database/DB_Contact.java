@@ -9,6 +9,7 @@ public class DB_Contact {
     private boolean isTracked;
     private List<String> lookups;
     private String photoUri;
+    private String birthday;
 
     private long lastContactTime;
 
@@ -20,11 +21,12 @@ public class DB_Contact {
         this.isTracked = isTracked;
         lastContactTime = 0;
     }
-    DB_Contact(long id, String name, boolean isTracked, String photoUri, long lastContactTime){
+    DB_Contact(long id, String name, boolean isTracked, String photoUri, String birthday, long lastContactTime){
         this.id = id;
         this.name = name;
         this.isTracked = isTracked;
         this.photoUri = photoUri;
+        this.birthday = birthday;
         this.lastContactTime = lastContactTime;
     }
 
@@ -47,6 +49,9 @@ public class DB_Contact {
     public long getLastContactTime() {
         return lastContactTime;
     }
+    public String getBirthday() {
+        return birthday;
+    }
 
     public void setId(long id){
         this.id = id;
@@ -68,4 +73,7 @@ public class DB_Contact {
         this.photoUri = uri;
     }
     public void setLastContactTime(long lastContactTime){ this.lastContactTime = lastContactTime;}
+    public void setBirthday(String birthday){
+        this.birthday = birthday;
+    }
 }
