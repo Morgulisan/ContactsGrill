@@ -62,6 +62,14 @@ public class DB_Handler extends SQLiteOpenHelper{
         this.close();
     }
 
+    public void updateContactPhotoURI(long id, String uri){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("photoUri",uri);
+        db.update("contacts",cv,"id="+id, null);
+        this.close();
+    }
+
     public ContentValues getLookups(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor;

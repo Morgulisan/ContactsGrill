@@ -63,13 +63,6 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadContactsAndShowDebug();
-            }
-        });
-        loadContactsAndShowDebug();*/
         if(hasPermissionsRequired()) {
             DB_ContactLoader update = new DB_ContactLoader(this);
             update.UpdateContactsInDB();
