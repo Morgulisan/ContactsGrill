@@ -15,7 +15,9 @@ public class DB_Contact {
     private String jobDesc;
     private String jobCompany;
 
+    private long firstContactTime;
     private long lastContactTime;
+
 
 
     DB_Contact() {id = -1;}
@@ -53,6 +55,9 @@ public class DB_Contact {
     public long getLastContactTime() {
         return lastContactTime;
     }
+    public long getFirstContactTime() {
+        return firstContactTime;
+    }
     public String getBirthday() {
         return birthday;
     }
@@ -66,7 +71,6 @@ public class DB_Contact {
         }
         if(getPhotoUri() != null) completes += 1; //contains contact Photo;
         if(getName().indexOf(' ') != -1) completes += 1; //name probably has first and Second name //TODO check Capitalization
-        Log.d("test", "Contact " + name + " is " + completes/tasks + " complete");
         return completes / tasks;
     }
 
@@ -90,6 +94,7 @@ public class DB_Contact {
         this.photoUri = uri;
     }
     public void setLastContactTime(long lastContactTime){ this.lastContactTime = lastContactTime;}
+    public void setFirtContactTime(long firstContactTime){ this.firstContactTime = firstContactTime;}
     public void setBirthday(String birthday){
         this.birthday = birthday;
     }

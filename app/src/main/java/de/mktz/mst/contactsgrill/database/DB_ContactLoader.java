@@ -63,7 +63,10 @@ public class DB_ContactLoader {
                     }
                 }
                 else {
+                    long lastCon = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.LAST_TIME_CONTACTED));
                     contact.setTracked(false);
+                    contact.setLastContactTime(lastCon);
+                    contact.setFirtContactTime(lastCon);
                     db_handler.insertContact(contact);
                 }
             }while(cursor.moveToNext());
@@ -71,7 +74,7 @@ public class DB_ContactLoader {
         cursor.close();
 
     }
-    public void UpdateBirtdaysInDB(){
+    public void UpdateBirthdaysInDB(){
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = ContactsContract.Data.CONTENT_URI;
         String[] projection = new String[]{

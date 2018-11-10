@@ -39,7 +39,6 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         ImageView contactImageView;
         CheckBox contactedCheck;
         TextView contactInfoText;
-        TextView completeInfoText;
 
     }
     enum ViewType{
@@ -162,6 +161,8 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             @Override
             public void onClick(View view) {
                 dataModel.setLastContactTime(System.currentTimeMillis());
+                DB_Handler handler = new DB_Handler(getContext());
+                handler.updateContactLastCon(dataModel.getId(),dataModel.getLastContactTime());
             }
         });
         // Return the completed view to render on screen

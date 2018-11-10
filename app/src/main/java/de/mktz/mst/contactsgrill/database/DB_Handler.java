@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DB_Handler extends SQLiteOpenHelper{
 
     private static final String DB_NAME = "database.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
 
 
@@ -23,7 +23,7 @@ public class DB_Handler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT, birthDay TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT, birthDay TEXT, firstContact INTEGER, lastContact INTEGER)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
     }
 
@@ -31,7 +31,11 @@ public class DB_Handler extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         if(oldV <= 1 && newV >=2) {
             db.execSQL("ALTER TABLE contacts ADD COLUMN birthDay TEXT;");
-            Log.d("tets", "updated from 1 to 2");
+            Log.d("test", "updated database from Version 1 to 2");
+        }if(oldV <= 2 && newV >= 3){
+            db.execSQL("ALTER TABLE contacts ADD COLUMN firstContact INTEGER;");
+            db.execSQL("ALTER TABLE contacts ADD COLUMN lastContact INTEGER;");
+            Log.d("test", "updated database from Version 2 to 3");
         }
     }
 
@@ -42,6 +46,8 @@ public class DB_Handler extends SQLiteOpenHelper{
         values.put("name",c.getName());
         values.put("tracked",c.getTracked());
         values.put("photoUri", c.getPhotoUri());
+        values.put("firstContact", c.getFirstContactTime());
+        values.put("lastContact", c.getLastContactTime());
 
         long id = db.insert("contacts",null,values);
         c.setId(id);
@@ -84,6 +90,13 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.update("contacts",cv,"id="+id, null);
         this.close();
     }
+    public void updateContactLastCon(long id, long timestamp){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("lastContact",timestamp);
+        db.update("contacts",cv,"id="+id, null);
+        this.close();
+    }
 
 
     public ContentValues getLookups(){
@@ -113,6 +126,8 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
         int indexBirthday = cursor.getColumnIndex("birthDay");
+        int indexFirstCon = cursor.getColumnIndex("firstContact");
+        int indexLastCon = cursor.getColumnIndex("lastContact");
         cursor.moveToFirst();
         DB_Contact rc = new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1);
         if(cursor.getString(indexPhoto) != null){
@@ -121,6 +136,7 @@ public class DB_Handler extends SQLiteOpenHelper{
         if(cursor.getString(indexBirthday) != null) {
             rc.setBirthday(cursor.getString(indexBirthday));
         }
+        rc.setLastContactTime(cursor.getLong(indexLastCon));
         cursor.close();
         return rc;
     }
@@ -132,6 +148,8 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
         int indexBirthday = cursor.getColumnIndex("birthDay");
+        int indexFirstCon = cursor.getColumnIndex("firstContact");
+        int indexLastCon = cursor.getColumnIndex("lastContact");
         cursor.moveToFirst();
         DB_Contact rc = new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1);
         if(cursor.getString(indexPhoto) != null){
@@ -140,6 +158,7 @@ public class DB_Handler extends SQLiteOpenHelper{
         if(cursor.getString(indexBirthday) != null) {
             rc.setBirthday(cursor.getString(indexBirthday));
         }
+        rc.setLastContactTime(cursor.getLong(indexLastCon));
         cursor.close();
         return rc;
     }
@@ -155,6 +174,8 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
         int indexBirthday = cursor.getColumnIndex("birthDay");
+        int indexFirstCon = cursor.getColumnIndex("firstContact");
+        int indexLastCon = cursor.getColumnIndex("lastContact");
         cursor.moveToFirst();
         do {
             DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
@@ -164,6 +185,7 @@ public class DB_Handler extends SQLiteOpenHelper{
             if(cursor.getString(indexBirthday) != null) {
                 rc.setBirthday(cursor.getString(indexBirthday));
             }
+            rc.setLastContactTime(cursor.getLong(indexLastCon));
             listOfResults.add(rc);
         } while (cursor.moveToNext());
         cursor.close();
@@ -180,6 +202,8 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexTrack = cursor.getColumnIndex("tracked");
         int indexPhoto = cursor.getColumnIndex("photoUri");
         int indexBirthday = cursor.getColumnIndex("birthDay");
+        int indexFirstCon = cursor.getColumnIndex("firstContact");
+        int indexLastCon = cursor.getColumnIndex("lastContact");
         if(cursor.moveToFirst()) {
             do {
                 DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
@@ -189,6 +213,7 @@ public class DB_Handler extends SQLiteOpenHelper{
                 if(cursor.getString(indexBirthday) != null) {
                     rc.setBirthday(cursor.getString(indexBirthday));
                 }
+                rc.setLastContactTime(cursor.getLong(indexLastCon));
                 listOfResults.add(rc);
             } while (cursor.moveToNext());
         }
