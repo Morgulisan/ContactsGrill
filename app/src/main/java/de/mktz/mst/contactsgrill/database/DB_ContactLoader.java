@@ -102,4 +102,32 @@ public class DB_ContactLoader {
         }
         cursor.close();
     }
+    public void UpdatePhoneNumbers(){
+        ContentResolver cr = context.getContentResolver();
+        Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        if(phones.moveToFirst())do{
+            String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            String name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+            DB_Handler db_handler = new DB_Handler(context);
+            switch (type) {
+                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                    // do something with the Home number here...
+                    db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(),number,0);
+                    //Log.d("test", "Found Home number " + number + "\t by " + name);
+                    break;
+                case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                    // do something with the Mobile number here...
+                    db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(),number,1);
+                    //Log.d("test", "Found Mobile number " + number + "\t by " + name);
+                    break;
+                case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                    // do something with the Work number here...
+                    db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(),number,2);
+                    //Log.d("test", "Found Work number " + number + "\t by " + name);
+                    break;
+            }
+        }while (phones.moveToNext());
+        phones.close();
+    } //TODO Optimize, this sucks
 }

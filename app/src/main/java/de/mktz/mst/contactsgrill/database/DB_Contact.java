@@ -1,7 +1,12 @@
 package de.mktz.mst.contactsgrill.database;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 
 public class DB_Contact {
@@ -10,8 +15,12 @@ public class DB_Contact {
     private String name;
     private boolean isTracked;
     private List<String> lookups;
+    private ArrayList<String> phoneNumbers;
+    private List<DB_Contact_Pocket> pockets;
     private String photoUri;
     private String birthday;
+
+
     private String jobDesc;
     private String jobCompany;
 
@@ -26,14 +35,7 @@ public class DB_Contact {
         this.name = name;
         this.isTracked = isTracked;
         lastContactTime = 0;
-    }
-    DB_Contact(long id, String name, boolean isTracked, String photoUri, String birthday, long lastContactTime){
-        this.id = id;
-        this.name = name;
-        this.isTracked = isTracked;
-        this.photoUri = photoUri;
-        this.birthday = birthday;
-        this.lastContactTime = lastContactTime;
+        phoneNumbers = new ArrayList<String>();
     }
 
 
@@ -61,9 +63,12 @@ public class DB_Contact {
     public String getBirthday() {
         return birthday;
     }
+    public ArrayList<String> getPhoneNumbers(){
+        return phoneNumbers;
+    }
 
     public float getCompleteness(){
-        int tasks = 3;
+        int tasks = 4;
         float completes = 0f;
         if(getBirthday() != null) {
             if(getBirthday().length() >= 7 ) completes += 0.5f; //contains day and Month
@@ -71,6 +76,18 @@ public class DB_Contact {
         }
         if(getPhotoUri() != null) completes += 1; //contains contact Photo;
         if(getName().indexOf(' ') != -1) completes += 1; //name probably has first and Second name //TODO check Capitalization
+        if(phoneNumbers != null){
+            float numberPercent = 1f;
+            for (String number : phoneNumbers){
+                float numberP = 1f;
+                if (!(number.substring(0,1).equals("+") || number.substring(0,2).equals("00"))){
+                    numberP -= 0.2f;
+                }
+                if(number.length() <= 8) numberP -= 0.8;
+                numberPercent *= numberP;
+            }
+            completes += numberPercent;
+        }
         return completes / tasks;
     }
 
@@ -97,5 +114,9 @@ public class DB_Contact {
     public void setFirtContactTime(long firstContactTime){ this.firstContactTime = firstContactTime;}
     public void setBirthday(String birthday){
         this.birthday = birthday;
+    }
+    public void addPhoneNumber(String number){
+        if(phoneNumbers == null) phoneNumbers = new ArrayList<String>();
+        phoneNumbers.add(number);
     }
 }

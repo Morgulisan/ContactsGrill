@@ -12,19 +12,21 @@ import java.util.ArrayList;
 public class DB_Handler extends SQLiteOpenHelper{
 
     private static final String DB_NAME = "database.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 1;
 
 
 
     public DB_Handler(Context context) {
         //SQLiteDatabase.CursorFactory factory = null;
         super(context, DB_NAME, null, DB_VERSION);
+
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT, birthDay TEXT, firstContact INTEGER, lastContact INTEGER)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS phoneNumbers (id INTEGER, number TEXT, type INTEGER)");
     }
 
     @Override
@@ -59,7 +61,16 @@ public class DB_Handler extends SQLiteOpenHelper{
             db.insert("lookups",null, lookups);
         }
 
-        this.close();
+        db.close();
+    }
+    public void insertPhoneNumber(long contactID, String phoneNumber,int type){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("id",contactID);
+        values.put("number",phoneNumber);
+        values.put("type", type);
+        db.insert("phoneNumbers",null,values);
+        db.close();
     }
 
     public void updateContactTrack(long id, boolean track){
@@ -138,6 +149,12 @@ public class DB_Handler extends SQLiteOpenHelper{
         }
         rc.setLastContactTime(cursor.getLong(indexLastCon));
         cursor.close();
+        Cursor phones = db.query("phoneNumbers",null,"id=?",new String[]{String.valueOf(contactID)},null,null,null);
+        if(phones.moveToFirst()) do {
+            rc.addPhoneNumber(phones.getString(phones.getColumnIndex("number")));
+            Log.d("test","added number ");
+        }while (phones.moveToNext());
+        phones.close();
         return rc;
     }
     public DB_Contact getContactByName(String name){
@@ -176,8 +193,7 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexBirthday = cursor.getColumnIndex("birthDay");
         int indexFirstCon = cursor.getColumnIndex("firstContact");
         int indexLastCon = cursor.getColumnIndex("lastContact");
-        cursor.moveToFirst();
-        do {
+        if(cursor.moveToFirst()) do {
             DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
             if(cursor.getString(indexPhoto) != null){
                 rc.setPhotoUri(cursor.getString(indexPhoto));
@@ -234,7 +250,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.close();
         return i;
     }
-
     public int debugReadTracked(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("contacts",null,null,null,null,null,null);

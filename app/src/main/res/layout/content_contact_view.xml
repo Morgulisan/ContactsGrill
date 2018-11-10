@@ -75,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@+id/displayNameView" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/infoFeld2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -98,7 +98,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/locationIcon"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/infoFeld2" />
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"

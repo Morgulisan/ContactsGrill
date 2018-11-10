@@ -63,6 +63,7 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
             DB_ContactLoader update = new DB_ContactLoader(this);
             update.UpdateContactsInDB();
             update.UpdateBirthdaysInDB();
+            if(Math.random() > 0.8f) update.UpdatePhoneNumbers();
             DB_Handler handler = new DB_Handler(this);
             Log.d("test", handler.debugRead() + "");
             Log.d("test", handler.debugReadTracked() + "");
