@@ -2,6 +2,7 @@ package de.mktz.mst.contactsgrill;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
 
     private static class ViewHolderMain{
         TextView contactNameTextView;
+        ImageView contactImageView;
 
     }
 
@@ -121,13 +124,14 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.list_contact, parent, false);
             viewHolder.contactNameTextView = convertView.findViewById(R.id.contactNameField);
-
+            viewHolder.contactImageView = convertView.findViewById(R.id.profilePicPrev);
             convertView.setTag(viewHolder);
 
         } else {
             viewHolder = (ViewHolderMain) convertView.getTag();
         }
         viewHolder.contactNameTextView.setText(dataModel.getName());
+        if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

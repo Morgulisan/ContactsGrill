@@ -113,10 +113,14 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexID = cursor.getColumnIndex("id");
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
-
+        int indexPhoto = cursor.getColumnIndex("photoUri");
         cursor.moveToFirst();
         do {
-            listOfResults.add(new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1));
+            DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
+            if(cursor.getString(indexPhoto) != null){
+                rc.setPhotoUri(cursor.getString(indexPhoto));
+            }
+            listOfResults.add(rc);
         } while (cursor.moveToNext());
         cursor.close();
         db.close();
@@ -132,10 +136,14 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexID = cursor.getColumnIndex("id");
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
-
+        int indexPhoto = cursor.getColumnIndex("photoUri");
         if(cursor.moveToFirst()) {
             do {
-                listOfResults.add(new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1));
+                DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
+                if(cursor.getString(indexPhoto) != null){
+                    rc.setPhotoUri(cursor.getString(indexPhoto));
+                }
+                listOfResults.add(rc);
             } while (cursor.moveToNext());
         }
         cursor.close();
