@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +39,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         ImageView contactImageView;
         CheckBox contactedCheck;
         TextView contactInfoText;
+        TextView completeInfoText;
 
     }
     enum ViewType{
@@ -136,8 +136,8 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             convertView = inflater.inflate(R.layout.list_contact, parent, false);
             viewHolder.contactNameTextView = convertView.findViewById(R.id.contactNameField);
             viewHolder.contactImageView = convertView.findViewById(R.id.profilePicPrev);
-            viewHolder.contactedCheck = convertView.findViewById(R.id.contacted);
-            viewHolder.contactInfoText = convertView.findViewById(R.id.contactInfoField);
+            viewHolder.contactedCheck   = convertView.findViewById(R.id.contacted);
+            viewHolder.contactInfoText  = convertView.findViewById(R.id.contactInfoField);
             convertView.setTag(viewHolder);
 
         } else {
@@ -146,7 +146,6 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         viewHolder.contactedCheck.setChecked(false);
         viewHolder.contactNameTextView.setText(dataModel.getName());
         viewHolder.contactInfoText.setText(TimestampToDateText(dataModel.getLastContactTime()));
-
         if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
         else viewHolder.contactImageView.setImageDrawable(null);
         convertView.setOnClickListener(new View.OnClickListener() {

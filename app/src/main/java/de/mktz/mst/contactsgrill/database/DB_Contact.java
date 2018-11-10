@@ -1,4 +1,6 @@
 package de.mktz.mst.contactsgrill.database;
+import android.util.Log;
+
 import java.util.List;
 
 
@@ -10,6 +12,8 @@ public class DB_Contact {
     private List<String> lookups;
     private String photoUri;
     private String birthday;
+    private String jobDesc;
+    private String jobCompany;
 
     private long lastContactTime;
 
@@ -51,6 +55,19 @@ public class DB_Contact {
     }
     public String getBirthday() {
         return birthday;
+    }
+
+    public float getCompleteness(){
+        int tasks = 3;
+        float completes = 0f;
+        if(getBirthday() != null) {
+            if(getBirthday().length() >= 7 ) completes += 0.5f; //contains day and Month
+            if(getBirthday().length() == 10) completes += 0.5f;  //contains Year
+        }
+        if(getPhotoUri() != null) completes += 1; //contains contact Photo;
+        if(getName().indexOf(' ') != -1) completes += 1; //name probably has first and Second name //TODO check Capitalization
+        Log.d("test", "Contact " + name + " is " + completes/tasks + " complete");
+        return completes / tasks;
     }
 
     public void setId(long id){

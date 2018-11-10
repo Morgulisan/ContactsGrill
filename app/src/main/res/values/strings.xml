@@ -25,5 +25,8 @@
     <string name="profile_image">Profile image</string>
     <string name="default_name">John Doe</string>
     <string name="default_birthday">01.01.1970</string>
+
+    <!--Missing values-->
+    <string name="missing_birthday">missing birthday</string>
     
 </resources>
