@@ -70,57 +70,26 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
             }
         });
         loadContactsAndShowDebug();*/
+        if(hasPermissionsRequired()) {
+            DB_ContactLoader update = new DB_ContactLoader(this);
+            update.UpdateContactsInDB();
+            DB_Handler handler = new DB_Handler(this);
+            Log.d("test", handler.debugRead() + "");
+            Log.d("test", handler.debugReadTracked() + "");
 
-        DB_ContactLoader update = new DB_ContactLoader(this);
-        update.UpdateContactsInDB();
-        DB_Handler handler = new DB_Handler(this);
-        Log.d("test",handler.debugRead() + "");
-        Log.d("test", handler.debugReadTracked() + "");
-
-        listView = findViewById(R.id.list_contacts_dynamic);
-        contactsToMenu();
+            listView = findViewById(R.id.list_contacts_dynamic);
+            contactsToMenu();
+        }
 
     }
 
-
-    /*private void loadContactsAndShowDebug(){
-
+    private boolean hasPermissionsRequired(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-            ((TextView) findViewById(R.id.textView5)).setText("Require Peesrmissions");
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+            return false;
         }
-        else {
-            try {
-                StringBuilder builder = new StringBuilder();
-                ContentResolver contentResolver = getContentResolver();
-                Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
-
-                int c = 0;
-                if (cursor.getCount() > 0) {
-                    while (cursor.moveToNext() && c++ < 10) {
-                        if(cursor.isFirst() || cursor.isLast()) {
-                            int count = cursor.getColumnCount();
-                            while(count-- > 0){
-                                builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
-                            }
-                            builder.append("\n\n\n\n");
-                        }
-                        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                        String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                        String lookup = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                        //String lookupURI = ContactsContract.Contacts.getLookupUri((long) cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID)), lookup).toString();
-                        builder.append(id).append(": Name : ").append(name).append(" LOOKUP : ").append(lookup).append("\n LOOKUP_URI : ").append(lookupURI).append("\n");
-                    }
-                }
-                else builder.append("No Contacts");
-                cursor.close();
-                ((TextView) findViewById(R.id.textView5)).setText(builder.toString());
-            } catch (Exception e) {
-                ((TextView) findViewById(R.id.textView5)).setText(e.getMessage());
-            }
-        }
-    } */
+        return true;
+    }
 
     @Override
     public void onBackPressed() {

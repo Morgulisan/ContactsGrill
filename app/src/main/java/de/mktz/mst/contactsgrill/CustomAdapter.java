@@ -19,7 +19,6 @@ import de.mktz.mst.contactsgrill.database.DB_Handler;
 
 public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnClickListener{
 
-    //private ArrayList<ContactCard> dataSet;
     private Context activityContext;
     private final ViewType viewType;
 
@@ -50,9 +49,6 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
 
     @Override
     public void onClick(View v) {
-        /*int position=(Integer) v.getTag();
-        Object object= getItem(position);
-        ContactCard dataModel = (ContactCard)object;*/
 
     }
 

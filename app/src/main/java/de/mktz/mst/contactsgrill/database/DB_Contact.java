@@ -8,6 +8,8 @@ public class DB_Contact {
     private String name;
     private boolean isTracked;
     private List<String> lookups;
+    private String photoUri;
+    private String photoUriSmall;
 
     DB_Contact() {id = -1;}
     DB_Contact(long id, String name, boolean isTracked){
@@ -29,6 +31,12 @@ public class DB_Contact {
     public List<String> getLookups() {
         return lookups;
     }
+    public String getPhotoUri() {
+        return photoUri;
+    }
+    public String getPhotoUriSmall() {
+        return photoUriSmall;
+    }
 
     public void setId(long id){
         this.id = id;
@@ -46,5 +54,8 @@ public class DB_Contact {
         this.lookups.addAll(lookups);
         //TODO Uniques
     }
-
+    public void setPhotoUri(String uri){
+        photoUri = uri;
+    }
+    public void setPhotoUriSmall(String uri) {photoUriSmall = uri;};
 }

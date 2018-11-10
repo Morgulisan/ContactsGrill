@@ -23,7 +23,7 @@ public class DB_Handler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
 
     }
@@ -87,8 +87,12 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexID = cursor.getColumnIndex("id");
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
+        int indexPhoto = cursor.getColumnIndex("photoUri");
         cursor.moveToFirst();
         DB_Contact rc = new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1);
+        if(cursor.getString(indexPhoto) != null){
+            rc.setPhotoUri(cursor.getString(indexPhoto));
+        }
         cursor.close();
         return rc;
     }
@@ -121,10 +125,11 @@ public class DB_Handler extends SQLiteOpenHelper{
         int indexName = cursor.getColumnIndex("name");
         int indexTrack = cursor.getColumnIndex("tracked");
 
-        cursor.moveToFirst();
-        do {
-            listOfResults.add(new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1));
-        } while (cursor.moveToNext());
+        if(cursor.moveToFirst()) {
+            do {
+                listOfResults.add(new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1));
+            } while (cursor.moveToNext());
+        }
         cursor.close();
         db.close();
         Log.d("test", "Size of Data: " + listOfResults.size() + "");
