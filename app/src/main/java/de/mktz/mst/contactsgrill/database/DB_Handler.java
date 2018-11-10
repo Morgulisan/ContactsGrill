@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DB_Handler extends SQLiteOpenHelper{
 
     private static final String DB_NAME = "database.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
 
 
@@ -25,15 +25,17 @@ public class DB_Handler extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT, birthDay TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
-
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+        if(oldV <= 1 && newV >=2) {
+            db.execSQL("ALTER TABLE contacts ADD COLUMN birthDay TEXT;");
+            Log.d("tets", "updated from 1 to 2");
+        }
     }
 
-    public DB_Contact insertContact(DB_Contact c){
+    public void insertContact(DB_Contact c){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -52,7 +54,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         }
 
         this.close();
-        return c;
     }
 
     public void updateContactTrack(long id, boolean track){
@@ -62,7 +63,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.update("contacts",cv,"id="+id, null);
         this.close();
     }
-
     public void updateContactPhotoURI(long id, String uri){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -70,7 +70,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.update("contacts",cv,"id="+id, null);
         this.close();
     }
-
     public void updateContactBirthday(long id, String birthday){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -78,7 +77,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.update("contacts",cv,"id="+id, null);
         this.close();
     }
-
     public void updateContactName(long id, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -120,12 +118,32 @@ public class DB_Handler extends SQLiteOpenHelper{
         if(cursor.getString(indexPhoto) != null){
             rc.setPhotoUri(cursor.getString(indexPhoto));
         }
-        if(indexBirthday != -1 && cursor.getString(indexBirthday) != null) {
+        if(cursor.getString(indexBirthday) != null) {
             rc.setBirthday(cursor.getString(indexBirthday));
         }
         cursor.close();
         return rc;
     }
+    public DB_Contact getContactByName(String name){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("contacts",null,"name=?",new String[]{name},null,null,null);
+        int indexID = cursor.getColumnIndex("id");
+        int indexName = cursor.getColumnIndex("name");
+        int indexTrack = cursor.getColumnIndex("tracked");
+        int indexPhoto = cursor.getColumnIndex("photoUri");
+        int indexBirthday = cursor.getColumnIndex("birthDay");
+        cursor.moveToFirst();
+        DB_Contact rc = new DB_Contact(cursor.getInt(indexID),cursor.getString(indexName),cursor.getInt(indexTrack)== 1);
+        if(cursor.getString(indexPhoto) != null){
+            rc.setPhotoUri(cursor.getString(indexPhoto));
+        }
+        if(cursor.getString(indexBirthday) != null) {
+            rc.setBirthday(cursor.getString(indexBirthday));
+        }
+        cursor.close();
+        return rc;
+    }
+
 
     public ArrayList<DB_Contact> getListOfAllContacts(){
         SQLiteDatabase db = getReadableDatabase();
@@ -143,7 +161,7 @@ public class DB_Handler extends SQLiteOpenHelper{
             if(cursor.getString(indexPhoto) != null){
                 rc.setPhotoUri(cursor.getString(indexPhoto));
             }
-            if(indexBirthday != -1 && cursor.getString(indexBirthday) != null) {
+            if(cursor.getString(indexBirthday) != null) {
                 rc.setBirthday(cursor.getString(indexBirthday));
             }
             listOfResults.add(rc);
@@ -152,7 +170,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.close();
         return listOfResults;
     }
-
     public ArrayList<DB_Contact> getListOfTrackedContacts(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("contacts",null,"tracked=1",null,null,null,null);
@@ -169,7 +186,7 @@ public class DB_Handler extends SQLiteOpenHelper{
                 if(cursor.getString(indexPhoto) != null){
                     rc.setPhotoUri(cursor.getString(indexPhoto));
                 }
-                if(indexBirthday != -1 && cursor.getString(indexBirthday) != null) {
+                if(cursor.getString(indexBirthday) != null) {
                     rc.setBirthday(cursor.getString(indexBirthday));
                 }
                 listOfResults.add(rc);

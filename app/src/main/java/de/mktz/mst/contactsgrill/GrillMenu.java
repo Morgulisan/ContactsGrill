@@ -66,6 +66,7 @@ public class GrillMenu extends AppCompatActivity implements NavigationView.OnNav
         if(hasPermissionsRequired()) {
             DB_ContactLoader update = new DB_ContactLoader(this);
             update.UpdateContactsInDB();
+            update.UpdateBirtdaysInDB();
             DB_Handler handler = new DB_Handler(this);
             Log.d("test", handler.debugRead() + "");
             Log.d("test", handler.debugReadTracked() + "");

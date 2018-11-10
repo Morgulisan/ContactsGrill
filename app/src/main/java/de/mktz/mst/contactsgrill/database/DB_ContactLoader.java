@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -70,5 +71,32 @@ public class DB_ContactLoader {
         cursor.close();
 
     }
+    public void UpdateBirtdaysInDB(){
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = ContactsContract.Data.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts._ID,
+                ContactsContract.CommonDataKinds.Event.START_DATE,
+                ContactsContract.CommonDataKinds.Event.TYPE
+        };
+        String where = ContactsContract.Data.MIMETYPE + "= ? AND " +
+                ContactsContract.CommonDataKinds.Event.TYPE + "=" + ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY;
+        String[] selectionArgs = new String[]{ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE};
 
+        Cursor cursor = contentResolver.query(uri, projection, where, selectionArgs, null, null);
+        if (cursor.getCount() > 0){
+            cursor.moveToFirst();
+            do{
+                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                String birthday = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Event.START_DATE));
+
+                DB_Contact c = db_handler.getContactByName(name);
+                if(c.getBirthday() == null || !c.getBirthday().equals(birthday)){
+                    db_handler.updateContactBirthday(c.getId(),birthday);
+                }
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+    }
 }
