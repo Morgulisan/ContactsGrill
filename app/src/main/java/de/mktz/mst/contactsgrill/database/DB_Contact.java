@@ -9,13 +9,23 @@ public class DB_Contact {
     private boolean isTracked;
     private List<String> lookups;
     private String photoUri;
-    private String photoUriSmall;
+
+    private long lastContactTime;
+
 
     DB_Contact() {id = -1;}
     DB_Contact(long id, String name, boolean isTracked){
         this.id = id;
         this.name = name;
         this.isTracked = isTracked;
+        lastContactTime = 0;
+    }
+    DB_Contact(long id, String name, boolean isTracked, String photoUri, long lastContactTime){
+        this.id = id;
+        this.name = name;
+        this.isTracked = isTracked;
+        this.photoUri = photoUri;
+        this.lastContactTime = lastContactTime;
     }
 
 
@@ -34,8 +44,8 @@ public class DB_Contact {
     public String getPhotoUri() {
         return photoUri;
     }
-    public String getPhotoUriSmall() {
-        return photoUriSmall;
+    public long getLastContactTime() {
+        return lastContactTime;
     }
 
     public void setId(long id){
@@ -55,7 +65,7 @@ public class DB_Contact {
         //TODO Uniques
     }
     public void setPhotoUri(String uri){
-        photoUri = uri;
+        this.photoUri = uri;
     }
-    public void setPhotoUriSmall(String uri) {photoUriSmall = uri;};
+    public void setLastContactTime(long lastContactTime){ this.lastContactTime = lastContactTime;}
 }

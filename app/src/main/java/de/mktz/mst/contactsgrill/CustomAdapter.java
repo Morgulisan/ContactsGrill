@@ -10,10 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -28,11 +33,14 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         TextView contactNameTextView;
         TextView contactInfoTextView;
         Switch contactFollowView;
+        ImageView contactImageView;
     }
 
     private static class ViewHolderMain{
         TextView contactNameTextView;
         ImageView contactImageView;
+        CheckBox contactedCheck;
+        TextView contactInfoText;
 
     }
 
@@ -84,6 +92,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             viewHolder.contactNameTextView = convertView.findViewById(R.id.contactNameField);
             viewHolder.contactInfoTextView = convertView.findViewById(R.id.NextMeetField);
             viewHolder.contactFollowView   = convertView.findViewById(R.id.followEnabled);
+            viewHolder.contactImageView    = convertView.findViewById(R.id.profileImage);
 
             convertView.setTag(viewHolder);
 
@@ -92,7 +101,8 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         }
 
         //this.lastPosition = position;
-
+        if(dataModel.getPhotoUri() != null) {viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));}
+        else viewHolder.contactImageView.setImageDrawable(null);
         viewHolder.contactNameTextView.setText(dataModel.getName());
         viewHolder.contactInfoTextView.setText(String.format("%d",dataModel.getId()));
         viewHolder.contactFollowView.setChecked(dataModel.getTracked());
@@ -100,6 +110,9 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(activityContext,ContactView.class);
+                Bundle b = new Bundle();
+                b.putLong("contactId",dataModel.getId());
+                intent.putExtras(b);
                 activityContext.startActivity(intent);
             }
         });
@@ -125,13 +138,22 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             convertView = inflater.inflate(R.layout.list_contact, parent, false);
             viewHolder.contactNameTextView = convertView.findViewById(R.id.contactNameField);
             viewHolder.contactImageView = convertView.findViewById(R.id.profilePicPrev);
+            viewHolder.contactedCheck = convertView.findViewById(R.id.contacted);
+            viewHolder.contactInfoText = convertView.findViewById(R.id.contactInfoField);
             convertView.setTag(viewHolder);
 
         } else {
             viewHolder = (ViewHolderMain) convertView.getTag();
         }
+        viewHolder.contactedCheck.setChecked(false);
         viewHolder.contactNameTextView.setText(dataModel.getName());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        Date netDate = (new Date(dataModel.getLastContactTime()));
+        viewHolder.contactInfoText.setText(sdf.format(netDate));
+
         if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
+        else viewHolder.contactImageView.setImageDrawable(null);
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,6 +162,12 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
                 b.putLong("contactId",dataModel.getId());
                 intent.putExtras(b);
                 activityContext.startActivity(intent);
+            }
+        });
+        viewHolder.contactedCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dataModel.setLastContactTime(System.currentTimeMillis());
             }
         });
         // Return the completed view to render on screen
