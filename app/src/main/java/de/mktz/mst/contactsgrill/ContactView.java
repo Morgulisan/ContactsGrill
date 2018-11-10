@@ -51,7 +51,6 @@ public class ContactView extends AppCompatActivity {
     }
 
     void getDebugData(long id){
-        Log.d("test","Opening Contact for ID " + id);
         DB_Handler handler = new DB_Handler(this);
         DB_Contact contact = handler.getContactByID(id);
 
@@ -61,7 +60,7 @@ public class ContactView extends AppCompatActivity {
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
         }
         else {
-            Log.d("test", "Has Permissions");
+            //Has permissions
             try {
                 StringBuilder builder = new StringBuilder();
                 ContentResolver contentResolver = getContentResolver();
