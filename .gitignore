@@ -12,3 +12,4 @@
 .build.*
 .gradle.properties
 /app/build*
+/app/release*
