@@ -106,7 +106,7 @@ public class DB_ContactLoader {
         ContentResolver cr = context.getContentResolver();
         Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         if(phones.moveToFirst())do{
-            String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("\\s","");
             String name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
             DB_Handler db_handler = new DB_Handler(context);
