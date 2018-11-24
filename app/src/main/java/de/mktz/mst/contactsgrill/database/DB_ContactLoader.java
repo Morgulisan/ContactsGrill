@@ -67,6 +67,7 @@ public class DB_ContactLoader {
                     contact.setTracked(false);
                     contact.setLastContactTime(lastCon);
                     contact.setFirstContactTime(lastCon);
+                    contact.setPhotoUri(photo);
                     db_handler.insertContact(contact);
                 }
             }while(cursor.moveToNext());

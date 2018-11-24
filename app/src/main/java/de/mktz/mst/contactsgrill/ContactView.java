@@ -62,6 +62,10 @@ public class ContactView extends AppCompatActivity {
             ((TextView) findViewById(R.id.BirtdayInfo)).setTextColor(Color.RED);
         }
         ((TextView) findViewById(R.id.completeInfoField)).setText("Kontakt " + (int) (contact.getCompleteness() * 100)  + "% komplett"); //TODO
+        if(contact.getCompleteness() != 1f){
+            ((ImageView) findViewById(R.id.completenessIcon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_24dp,null));
+            //TODO Color
+        }
         if(!contact.getPhoneNumbers().isEmpty() )((TextView) findViewById(R.id.infoFeld2)).setText(contact.getPhoneNumbers().size() + ":" +  contact.getPhoneNumbers().get(0));
     }
 

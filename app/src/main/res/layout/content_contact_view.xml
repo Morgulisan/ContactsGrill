@@ -57,14 +57,14 @@
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <ImageView
-        android:id="@+id/locationIcon2"
+        android:id="@+id/completenessIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:tint="@color/lightText"
         app:layout_constraintStart_toEndOf="@+id/profileImage"
         app:layout_constraintTop_toBottomOf="@+id/locationIcon"
-        app:srcCompat="?attr/actionModePasteDrawable" />
+        app:srcCompat="@drawable/ic_check_circle_24dp" />
 
     <TextView
         android:id="@+id/BirtdayInfo"
