@@ -1,4 +1,4 @@
-package de.mktz.mst.contactsgrill.database;
+package de.mktz.mst.contactsgrill.database.pockets;
 
 import android.view.View;
 
@@ -11,7 +11,5 @@ public abstract class DB_Contact_Pocket {
     public abstract String getPocketName();
     public abstract View getInflatedPoket();
     public abstract float getCompleteness();
-
-
 
 }

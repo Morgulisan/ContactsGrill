@@ -27,7 +27,17 @@
     <string name="default_birthday">01.01.1970</string>
 
     <!--Missing values-->
+    <string name="missing_feature">Dieses Feature wird noch entwickelt</string>
     <string name="missing_birthday">missing birthday</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <!--Complete Tasks -->
+    <string name="complete_birthday">Der Geburtstag fehlt noch</string>
+    <string name="complete_birthday_year">Das Geburtsjahr fehlt noch</string>
+    <string name="complete_photo">Dieser Kontakt hat noch keinen Geburtstag</string>
+    <string name="complete_number_pre">Dieser Nummer fehlt der LänderPräfix</string>
+    <string name="complete_number_length">Diese Nummer ist zu kurz um eine Nummer zu sein</string>
+    <string name="complete_name_length">Diesem Kontakt fehlt evtl. ein Nachname</string>
+    <string name="complete_name_chars">Dieser Kontakt hat evtl. Dinge in seinem Namen stehen, die nicht Teil des Namens sind</string>
 </resources>

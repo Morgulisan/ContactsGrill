@@ -66,7 +66,7 @@ public class DB_ContactLoader {
                     long lastCon = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.LAST_TIME_CONTACTED));
                     contact.setTracked(false);
                     contact.setLastContactTime(lastCon);
-                    contact.setFirtContactTime(lastCon);
+                    contact.setFirstContactTime(lastCon);
                     db_handler.insertContact(contact);
                 }
             }while(cursor.moveToNext());

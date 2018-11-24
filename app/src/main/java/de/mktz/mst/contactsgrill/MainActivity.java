@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -21,13 +20,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -137,21 +131,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_contacts) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_all_contacts) {
             try {
                 Intent myIntent = new Intent(this, ContactSearch.class);
                 startActivity(myIntent);
             }catch (Exception e) {
                 //((TextView) findViewById(R.id.textView5)).setText(e.getMessage());
             }
-        } else if (id == R.id.nav_slideshow) {
-
+        } else if (id == R.id.nav_events) {
+            Snackbar.make(findViewById(R.id.appbar), R.string.missing_feature, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         } else if (id == R.id.nav_share) {
-
+            Snackbar.make(findViewById(R.id.appbar), R.string.missing_feature, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         } else if (id == R.id.nav_send) {
-
+            Snackbar.make(findViewById(R.id.appbar), R.string.missing_feature, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

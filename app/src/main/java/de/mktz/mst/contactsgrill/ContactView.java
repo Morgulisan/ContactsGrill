@@ -21,6 +21,7 @@ import android.util.Log;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -80,8 +81,6 @@ public class ContactView extends AppCompatActivity {
                 StringBuilder builder = new StringBuilder();
                 ContentResolver contentResolver = getContentResolver();
                 Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
-
-
                 if (cursor.getCount() > 0) {
                     LinearLayout linLayout = findViewById(R.id.detailsContainer);
 
