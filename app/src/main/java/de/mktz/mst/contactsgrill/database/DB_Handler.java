@@ -239,32 +239,4 @@ public class DB_Handler extends SQLiteOpenHelper{
         db.close();
         return listOfResults;
     }
-
-    public int debugRead(){
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("contacts",null,null,null,null,null,null);
-        int i = 0;
-        cursor.moveToFirst();
-        while(cursor.moveToNext()){
-            i++;
-        }
-        cursor.close();
-        db.close();
-        return i;
-    }
-    public int debugReadTracked(){
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("contacts",null,null,null,null,null,null);
-        int i = 0;
-        cursor.moveToFirst();
-        while(cursor.moveToNext()){
-            if(cursor.getInt(cursor.getColumnIndex("tracked")) != 0) {
-                i++;
-               // Log.d("test",cursor.getString(cursor.getColumnIndex("name")));
-            }
-        }
-        cursor.close();
-        db.close();
-        return i;
-    }
 }

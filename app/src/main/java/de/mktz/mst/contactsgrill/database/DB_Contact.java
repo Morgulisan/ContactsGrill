@@ -76,12 +76,13 @@ public class DB_Contact {
 
     public float getCompleteness(){
         if(completeness <= 0) {
-            if(completeTasks != null)completeTasks.clear();
+            if(completeTasks == null) completeTasks = new HashMap<>();
+            else completeTasks.clear();
             int tasks = 4;
             float completes = 0f;
+            completes += completenessName();
             completes += completenessBirthday();
             completes += completenessPhoto();
-            completes += completenessName();
             completes += completenessPhoneNumbers();
             completeness = completes / tasks;
             if (pockets != null)
@@ -96,9 +97,10 @@ public class DB_Contact {
     private float completenessBirthday(){
         float completeness = 0f;
         if(getBirthday() != null) {
-            if(getBirthday().length() >= 7 ) completeness += 0.5f; else addCompleteTask(COMPLETE_BIRTH_DAY, R.string.complete_birthday);//contains day and Month
+            if(getBirthday().length() >= 7 ) completeness += 0.5f; else addCompleteTask(COMPLETE_BIRTH_DAY, R.string.complete_birthday_day);//contains day and Month
             if(getBirthday().length() == 10) completeness += 0.5f; else addCompleteTask(COMPLETE_BIRTH_YEAR, R.string.complete_birthday_year); //contains Year
         }
+        else addCompleteTask(COMPLETE_BIRTH_DAY, R.string.complete_birthday);
         return completeness;
     }
     private float completenessPhoto(){
@@ -132,7 +134,7 @@ public class DB_Contact {
             completeness -= 0.5f;
             addCompleteTask(COMPLETE_NAME_SHORT,R.string.complete_name_length);
         }
-        String regexMatchName =  "^(([A-ZÄÖÜ][a-zäöü]*(-[A-ZÄÖÜ]?[a-zäöü]*)?|von) ?){2,}$";
+        String regexMatchName =  "^(([A-ZÄÖÜ][a-zäöü]*(-[A-ZÄÖÜ]?[a-zäöü]*)?|von) ?)*$";
         Pattern pattern = Pattern.compile(regexMatchName);
         Matcher matcher = pattern.matcher(getName());
         if(!matcher.find()){
@@ -147,7 +149,7 @@ public class DB_Contact {
         completeTasks.put(TaskName,TaskDescription);
     }
     public Map<String,Integer> getCompletingTasks(){
-        if(completeTasks == null) completeTasks = new HashMap<>();
+        if(completeTasks == null) getCompleteness();
         return completeTasks;
     }
 

@@ -16,12 +16,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.util.Log;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Map;
+import java.util.function.BiConsumer;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -78,9 +77,24 @@ public class ContactView extends AppCompatActivity {
         else {
             //Has permissions
             try {
-                StringBuilder builder = new StringBuilder();
+                final StringBuilder builder = new StringBuilder();
                 ContentResolver contentResolver = getContentResolver();
                 Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ) {
+                    contact.getCompletingTasks().forEach(new BiConsumer<String, Integer>() {
+                        @Override
+                        public void accept(String s, Integer integer) {
+                            if(s.substring(0,1).equals("#"))
+                            builder.append(s).append(": ");
+                            builder.append(getResources().getString(integer)).append("\n");
+
+                        }
+                    });
+                }
+                builder.append("\n");
+
+
                 if (cursor.getCount() > 0) {
                     LinearLayout linLayout = findViewById(R.id.detailsContainer);
 
@@ -152,8 +166,6 @@ public class ContactView extends AppCompatActivity {
     public static int getAge(Calendar a) {
         Calendar b = new GregorianCalendar();
         b.setTime(new Date());
-        Log.d("test", b.toString());
-        Log.d("test", a.toString());
         int diff = b.get(Calendar.YEAR) - a.get(Calendar.YEAR);
         if (a.get(Calendar.MONTH) > b.get(Calendar.MONTH) ||
                 (a.get(Calendar.MONTH) == b.get(Calendar.MONTH) && a.get(Calendar.DATE) > b.get(Calendar.DATE))) {

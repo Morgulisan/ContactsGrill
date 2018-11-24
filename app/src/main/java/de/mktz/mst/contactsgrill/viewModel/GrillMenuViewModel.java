@@ -4,9 +4,7 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.util.Log;
 
-import de.mktz.mst.contactsgrill.R;
 import de.mktz.mst.contactsgrill.database.DB_ContactLoader;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
 
@@ -52,8 +50,6 @@ public class GrillMenuViewModel {
 
     private void initDatabase() {
         databaseHandler = new DB_Handler(application);
-        Log.d("test", databaseHandler.debugRead() + "");
-        Log.d("test", databaseHandler.debugReadTracked() + "");
     }
 
     public DB_Handler getDatabaseHandler() {

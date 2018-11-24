@@ -70,7 +70,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             case VIEW_TOGGLE_TRACK:
                 return InflateTrack(position,convertView,parent);
             default:
-                Log.d("test", "Failed Switch");
+                Log.d("malte", "Failed Switch");
         }
         return convertView;
     }
