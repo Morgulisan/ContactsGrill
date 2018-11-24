@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <string name="phonebook_bucket_alt">Online ID of contact</string>
+   <string name="display_name">-</string>
+
+   <string-array name="contact_sort">
+      <item>phonebook_bucket_alt</item>
+   </string-array>
+</resources>

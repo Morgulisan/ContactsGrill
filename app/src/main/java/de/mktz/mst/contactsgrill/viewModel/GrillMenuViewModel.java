@@ -45,7 +45,8 @@ public class GrillMenuViewModel {
             DB_ContactLoader update = new DB_ContactLoader(application);
             update.UpdateContactsInDB();
             update.UpdateBirthdaysInDB();
-            // update.UpdatePhoneNumbers();
+            if (Math.random() > 0.8)
+                update.UpdatePhoneNumbers();
         }
     }
 

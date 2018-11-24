@@ -13,6 +13,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
+import de.mktz.mst.contactsgrill.database.DB_Handler;
 import de.mktz.mst.contactsgrill.viewModel.GrillMenuViewModel;
 
 
@@ -75,13 +76,16 @@ public class GrillMenuFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         listView = getView().findViewById(R.id.list_contacts_dynamic);
         contactsToMenu();
     }
 
     public void contactsToMenu() {
-        dataModels = viewModel.getDatabaseHandler().getListOfTrackedContacts();
+        if(groupName.equals("1"))
+            dataModels = viewModel.getDatabaseHandler().getListOfTrackedContacts();
+        else if(groupName.equals("2"))
+            dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
+        else dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(DB_Handler.SortParameter.SORT_BIRTHDAY);
         adapter = new CustomAdapter(dataModels, getActivity().getApplicationContext(), CustomAdapter.ViewType.VIEW_MAIN);
         listView.setAdapter(adapter);
     }

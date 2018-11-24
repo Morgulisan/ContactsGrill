@@ -96,9 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         hasPermissionsRequired();
-
     }
 
 
@@ -150,8 +148,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -169,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -184,13 +180,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Page " + (position + 1);
+            switch (position) {
+                case 0:
+                    return "Anstehend";
+                case 1:
+                    return "Kontakte";
+                case 2:
+                    return "Events";
+                default:
+                    return "Page " + (position + 1);
+            }
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 10;
+            return 5;
         }
     }
 }

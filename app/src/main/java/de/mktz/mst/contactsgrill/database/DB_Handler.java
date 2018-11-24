@@ -14,7 +14,11 @@ public class DB_Handler extends SQLiteOpenHelper{
     private static final String DB_NAME = "database.db";
     private static final int DB_VERSION = 1;
 
-
+    public enum SortParameter{
+        SORT_NAME,
+        SORT_ADDED,
+        SORT_BIRTHDAY
+    }
 
     public DB_Handler(Context context) {
         //SQLiteDatabase.CursorFactory factory = null;
@@ -182,35 +186,33 @@ public class DB_Handler extends SQLiteOpenHelper{
 
 
     public ArrayList<DB_Contact> getListOfAllContacts(){
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("contacts",null,null,null,null,null,null);
-        ArrayList<DB_Contact> listOfResults = new ArrayList<>();
+        return getListOfAllContacts(null,null,null,"name");
+    }
 
-        int indexID = cursor.getColumnIndex("id");
-        int indexName = cursor.getColumnIndex("name");
-        int indexTrack = cursor.getColumnIndex("tracked");
-        int indexPhoto = cursor.getColumnIndex("photoUri");
-        int indexBirthday = cursor.getColumnIndex("birthDay");
-        int indexFirstCon = cursor.getColumnIndex("firstContact");
-        int indexLastCon = cursor.getColumnIndex("lastContact");
-        if(cursor.moveToFirst()) do {
-            DB_Contact rc = new DB_Contact(cursor.getInt(indexID), cursor.getString(indexName), cursor.getInt(indexTrack) == 1);
-            if(cursor.getString(indexPhoto) != null){
-                rc.setPhotoUri(cursor.getString(indexPhoto));
-            }
-            if(cursor.getString(indexBirthday) != null) {
-                rc.setBirthday(cursor.getString(indexBirthday));
-            }
-            rc.setLastContactTime(cursor.getLong(indexLastCon));
-            listOfResults.add(rc);
-        } while (cursor.moveToNext());
-        cursor.close();
-        db.close();
-        return listOfResults;
+    public ArrayList<DB_Contact> getListOfAllContacts(SortParameter sortParameter){
+        String orderBy;
+        switch (sortParameter){
+            case SORT_NAME:
+                orderBy = "name";
+                break;
+            case SORT_ADDED:
+                orderBy = "id DESC";
+                break;
+            case SORT_BIRTHDAY:
+                orderBy = "birthDay DESC";
+                break;
+            default:
+                orderBy = null;
+        }
+        return getListOfAllContacts(null,null,null,orderBy);
     }
     public ArrayList<DB_Contact> getListOfTrackedContacts(){
+        return getListOfAllContacts(null,"tracked=1",null,null);
+    }
+
+    private ArrayList<DB_Contact> getListOfAllContacts(String[] columns, String selection, String[] selectArgs, String orderBy){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("contacts",null,"tracked=1",null,null,null,null);
+        Cursor cursor = db.query("contacts",columns,selection,selectArgs,null,null,orderBy);
         ArrayList<DB_Contact> listOfResults = new ArrayList<>();
 
         int indexID = cursor.getColumnIndex("id");

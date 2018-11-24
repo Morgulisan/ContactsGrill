@@ -11,7 +11,10 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.util.Log;
 
@@ -78,11 +81,19 @@ public class ContactView extends AppCompatActivity {
                 ContentResolver contentResolver = getContentResolver();
                 Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
 
+
                 if (cursor.getCount() > 0) {
+                    LinearLayout linLayout = findViewById(R.id.detailsContainer);
+
+
                     while (cursor.moveToNext()) {
                         if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equals(contact.getName())) {
                             int count = cursor.getColumnCount();
                             while(count-- > 0){
+                                // add as view
+                                //addEntry(cursor.getColumnName(count), cursor.getString(count), linLayout);
+
+                                // add to debug text
                                 builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                             }
                             builder.append("\n\n\n\n");
@@ -101,6 +112,23 @@ public class ContactView extends AppCompatActivity {
             }
         }
         ((TextView) findViewById(R.id.debugText)).append(contact.getPhoneNumbers().toString());
+    }
+
+    private void addEntry(String id, String value, ViewGroup root) {
+        View v = getLayoutInflater().inflate(R.layout.contact_detail_item, root, false);
+        TextView desc = v.findViewById(R.id.descriptor);
+        TextView val = v.findViewById(R.id.value);
+
+        String descString = id;
+        int resId = getResources().getIdentifier(id, "string", getPackageName());
+        if (resId != 0)
+            descString = getString(resId);
+
+        desc.setText(descString);
+        val.setText(value);
+
+        if (!descString.equals("-"))
+            root.addView(v);
     }
 
     private static String DebugBirthdayMess(String birthday){
