@@ -13,7 +13,7 @@
         android:layout_height="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/default_name"
+        tools:text="@string/default_name"
         app:layout_constraintStart_toEndOf="@+id/profilePicPrev"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="@string/default_birthday"
+        tools:text="@string/default_birthday"
         app:layout_constraintStart_toEndOf="@+id/profilePicPrev"
         app:layout_constraintTop_toBottomOf="@+id/contactNameField" />
 

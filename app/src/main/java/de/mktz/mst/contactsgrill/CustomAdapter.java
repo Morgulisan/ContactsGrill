@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -39,11 +40,18 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         ImageView contactImageView;
         CheckBox contactedCheck;
         TextView contactInfoText;
-
     }
+    private static class ViewHolderProgress{
+        TextView contactNameTextView;
+        ImageView contactImageView;
+        ProgressBar contactProgress;
+        TextView progressText;
+    }
+
     enum ViewType{
         VIEW_MAIN,
-        VIEW_TOGGLE_TRACK
+        VIEW_TOGGLE_TRACK,
+        VIEW_PROGRESS
     }
 
     CustomAdapter(ArrayList<DB_Contact> data, Context context, ViewType vt) {
@@ -69,6 +77,8 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
                 return InflateMain(position,convertView,parent);
             case VIEW_TOGGLE_TRACK:
                 return InflateTrack(position,convertView,parent);
+            case VIEW_PROGRESS:
+                return InflateProgress(position,convertView,parent);
             default:
                 Log.d("malte", "Failed Switch");
         }
@@ -163,6 +173,42 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
                 dataModel.setLastContactTime(System.currentTimeMillis());
                 DB_Handler handler = new DB_Handler(getContext());
                 handler.updateContactLastCon(dataModel.getId(),dataModel.getLastContactTime());
+            }
+        });
+        // Return the completed view to render on screen
+        return convertView;
+    }
+    private View InflateProgress(int position, View convertView,@NonNull ViewGroup parent){
+        final DB_Contact dataModel = getItem(position);
+        ViewHolderProgress viewHolder;
+        if (convertView == null) {
+
+            viewHolder = new ViewHolderProgress();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.list_contact_complete, parent, false);
+            viewHolder.contactNameTextView = convertView.findViewById(R.id.contactNameField);
+            viewHolder.contactImageView = convertView.findViewById(R.id.profilePicPrev);
+            viewHolder.progressText   = convertView.findViewById(R.id.percentageText);
+            viewHolder.contactProgress  = convertView.findViewById(R.id.progressCompleteness);
+            convertView.setTag(viewHolder);
+
+        } else {
+            viewHolder = (ViewHolderProgress) convertView.getTag();
+        }
+        viewHolder.contactNameTextView.setText(dataModel.getName());
+        viewHolder.contactProgress.setProgress((int) (dataModel.getCompleteness() *100));
+        viewHolder.progressText.setText((int) (dataModel.getCompleteness() *100) + "%");
+
+        if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
+        else viewHolder.contactImageView.setImageDrawable(null);
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activityContext,ContactView.class);
+                Bundle b = new Bundle();
+                b.putLong("contactId",dataModel.getId());
+                intent.putExtras(b);
+                activityContext.startActivity(intent);
             }
         });
         // Return the completed view to render on screen

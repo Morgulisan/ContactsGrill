@@ -118,11 +118,15 @@ public class DB_Contact {
                     numberP -= 0.2f;
                     addCompleteTask("#: " + number, R.string.complete_number_pre);
                 }
-                if(number.length() <= 8){
+                if(number.length() <= 7){
                     numberP -= 0.8;
                     addCompleteTask("#: " + number, R.string.complete_number_length);
                 }
                 numberPercent *= numberP;
+            }
+            if(phoneNumbers.isEmpty()) {
+                numberPercent = 0f;
+                addCompleteTask("NoNumber", R.string.complete_number_exists);
             }
             completeness += numberPercent;
         }
@@ -134,7 +138,7 @@ public class DB_Contact {
             completeness -= 0.5f;
             addCompleteTask(COMPLETE_NAME_SHORT,R.string.complete_name_length);
         }
-        String regexMatchName =  "^(([A-ZÄÖÜ][a-zäöü]*(-[A-ZÄÖÜ]?[a-zäöü]*)?|von) ?)*$";
+        String regexMatchName =  "^(([A-ZÄÖÜ][a-zäöüß]*(-[A-ZÄÖÜ]?[a-zäöüß]*)?|von) ?)*$";
         Pattern pattern = Pattern.compile(regexMatchName);
         Matcher matcher = pattern.matcher(getName());
         if(!matcher.find()){

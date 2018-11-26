@@ -40,7 +40,7 @@
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:background="@color/colorPrimary"
                 app:tabGravity="fill"
                 app:tabMode="fixed"/>

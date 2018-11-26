@@ -81,12 +81,24 @@ public class GrillMenuFragment extends Fragment {
     }
 
     public void contactsToMenu() {
-        if(groupName.equals("1"))
-            dataModels = viewModel.getDatabaseHandler().getListOfTrackedContacts();
-        else if(groupName.equals("2"))
-            dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
-        else dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(DB_Handler.SortParameter.SORT_BIRTHDAY);
-        adapter = new CustomAdapter(dataModels, getActivity().getApplicationContext(), CustomAdapter.ViewType.VIEW_MAIN);
+        CustomAdapter.ViewType vt = CustomAdapter.ViewType.VIEW_MAIN;
+        switch (groupName){
+            case "1":
+                dataModels = viewModel.getDatabaseHandler().getListOfTrackedContacts();
+                break;
+            case "2":
+                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
+                break;
+            case "3":
+                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(DB_Handler.SortParameter.SORT_BIRTHDAY);
+                break;
+            case "4":
+                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
+                vt = CustomAdapter.ViewType.VIEW_PROGRESS;
+            default:
+
+        }
+        adapter = new CustomAdapter(dataModels, getActivity().getApplicationContext(), vt);
         listView.setAdapter(adapter);
     }
 

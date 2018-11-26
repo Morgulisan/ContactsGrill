@@ -15,9 +15,12 @@
     <string name="menu_contacts_overview">Kontakte</string>
     <string name="menu_contacts_search">Suche</string>
     <string name="menu_planning_events">Veranstaltung Planen</string>
+    <string name="menu_connectivity">Zusammenarbeit</string>
+    <string name="menu_connectivity_share">Teilen</string>
+    <string name="menu_connectivity_send">Exportieren</string>
+
     <string name="title_activity_contact_search">ContactSearch</string>
     <string name="title_activity_contact_view">ContactView</string>
-
 
     <string name="permission_required">Require Permissions</string>
 
@@ -25,6 +28,7 @@
     <string name="profile_image">Profile image</string>
     <string name="default_name">John Doe</string>
     <string name="default_birthday">01.01.1970</string>
+    <string name="placeholder">PlaceHolder </string>
 
     <!--Missing values-->
     <string name="missing_feature">Dieses Feature wird noch entwickelt</string>
@@ -37,6 +41,7 @@
     <string name="complete_birthday_year">Das Geburtsjahr fehlt noch</string>
     <string name="complete_birthday">Dieser Kontakt hat noch keinen Geburtstag</string>
     <string name="complete_photo">Dieser Kontakt hat noch keine Photo</string>
+    <string name="complete_number_exists">Dieser Kontakt hat noch keine Handy Nummer</string>
     <string name="complete_number_pre">Dieser Nummer fehlt der LänderPräfix</string>
     <string name="complete_number_length">Diese Nummer ist zu kurz um eine Nummer zu sein</string>
     <string name="complete_name_length">Diesem Kontakt fehlt evtl. ein Nachname</string>

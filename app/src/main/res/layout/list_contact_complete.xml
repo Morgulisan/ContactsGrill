@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/contactNameField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profilePicPrev"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="@string/default_name" />
+
+    <ImageView
+        android:id="@+id/profilePicPrev"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/profile_image"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/progressCompleteness"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_menu_camera" />
+
+    <ProgressBar
+        android:id="@+id/progressCompleteness"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="20"
+        android:progressDrawable="@drawable/custom_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/percentageText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/progressCompleteness"
+        app:layout_constraintEnd_toEndOf="@+id/progressCompleteness"
+        app:layout_constraintStart_toStartOf="@+id/progressCompleteness"
+        app:layout_constraintTop_toTopOf="@+id/progressCompleteness"
+        tools:text=" 80%" />
+
+</android.support.constraint.ConstraintLayout>

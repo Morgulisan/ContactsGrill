@@ -17,16 +17,16 @@
                 android:icon="@drawable/ic_event_24dp"
                 android:title="@string/menu_planning_events" />
     </group>
-    <item android:title="Communicate">
+    <item android:title="@string/menu_connectivity">
         <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="@string/menu_connectivity_share" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="@string/menu_connectivity_send" />
         </menu>
     </item>
 

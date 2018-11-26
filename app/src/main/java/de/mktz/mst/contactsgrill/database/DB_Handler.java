@@ -30,18 +30,18 @@ public class DB_Handler extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, tracked INTEGER, photoUri TEXT, birthDay TEXT, firstContact INTEGER, lastContact INTEGER)");
         db.execSQL("CREATE TABLE IF NOT EXISTS lookups (lookup TEXT PRIMARY KEY, id INTEGER)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS phoneNumbers (id INTEGER, number TEXT, type INTEGER)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS phoneNumbers (id INTEGER, number TEXT UNIQUE, type INTEGER)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         if(oldV <= 1 && newV >=2) {
-            db.execSQL("ALTER TABLE contacts ADD COLUMN birthDay TEXT;");
-            Log.d("test", "updated database from Version 1 to 2");
+            //db.execSQL("ALTER TABLE phoneNumbers ADD COLUMN birthDay TEXT;");
+            Log.d("malte", "updated database from Version 1 to 2");
         }if(oldV <= 2 && newV >= 3){
-            db.execSQL("ALTER TABLE contacts ADD COLUMN firstContact INTEGER;");
-            db.execSQL("ALTER TABLE contacts ADD COLUMN lastContact INTEGER;");
-            Log.d("test", "updated database from Version 2 to 3");
+            //db.execSQL("ALTER TABLE contacts ADD COLUMN firstContact INTEGER;");
+            //db.execSQL("ALTER TABLE contacts ADD COLUMN lastContact INTEGER;");
+            Log.d("malte", "updated database from Version 2 to 3");
         }
     }
 
