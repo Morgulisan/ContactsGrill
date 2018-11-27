@@ -33,8 +33,12 @@
     <!--Missing values-->
     <string name="missing_feature">Dieses Feature wird noch entwickelt</string>
     <string name="missing_birthday">missing birthday</string>
+    <string name="missing_name">Fehler bei Namens Inizialisierung</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- -->
+    <string name="contact_view_completeness">Kontakt ist %d%% komplett</string>
 
     <!--Complete Tasks -->
     <string name="complete_birthday_day">Der Geburtstag fehlt noch</string>

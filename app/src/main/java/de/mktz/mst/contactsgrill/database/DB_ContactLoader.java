@@ -27,7 +27,7 @@ public class DB_ContactLoader {
 
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
-        if (cursor.getCount() > 0) {
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -71,9 +71,8 @@ public class DB_ContactLoader {
                     db_handler.insertContact(contact);
                 }
             }while(cursor.moveToNext());
+            cursor.close();
         }
-        cursor.close();
-
     }
     public void UpdateBirthdaysInDB(){
         ContentResolver contentResolver = context.getContentResolver();
@@ -89,7 +88,7 @@ public class DB_ContactLoader {
         String[] selectionArgs = new String[]{ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE};
 
         Cursor cursor = contentResolver.query(uri, projection, where, selectionArgs, null, null);
-        if (cursor.getCount() > 0){
+        if (cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();
             do{
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -100,35 +99,37 @@ public class DB_ContactLoader {
                     db_handler.updateContactBirthday(c.getId(),birthday);
                 }
             }while (cursor.moveToNext());
+            cursor.close();
         }
-        cursor.close();
     }
-    public void UpdatePhoneNumbers(){
+    public void UpdatePhoneNumbers() {
         ContentResolver cr = context.getContentResolver();
         Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        if(phones.moveToFirst())do{
-            String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("\\s","");
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-            int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-            DB_Handler db_handler = new DB_Handler(context);
-            switch (type) {
-                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                    // do something with the Home number here...
-                    db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(),number,0);
-                    //Log.d("test", "Found Home number " + number + "\t by " + name);
-                    break;
-                case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                    // do something with the Mobile number here...
-                    db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(),number,1);
-                    //Log.d("test", "Found Mobile number " + number + "\t by " + name);
-                    break;
-                case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                    // do something with the Work number here...
-                    db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(),number,2);
-                    //Log.d("test", "Found Work number " + number + "\t by " + name);
-                    break;
-            }
-        }while (phones.moveToNext());
+        if (phones != null && phones.moveToFirst()) {
+            do {
+                String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("\\s", "");
+                String name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                DB_Handler db_handler = new DB_Handler(context);
+                switch (type) {
+                    case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                        // do something with the Home number here...
+                        db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(), number, 0);
+                        //Log.d("test", "Found Home number " + number + "\t by " + name);
+                        break;
+                    case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                        // do something with the Mobile number here...
+                        db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(), number, 1);
+                        //Log.d("test", "Found Mobile number " + number + "\t by " + name);
+                        break;
+                    case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                        // do something with the Work number here...
+                        db_handler.insertPhoneNumber(db_handler.getContactByName(name).getId(), number, 2);
+                        //Log.d("test", "Found Work number " + number + "\t by " + name);
+                        break;
+                }
+            } while (phones.moveToNext());
         phones.close();
+        }
     } //TODO Optimize, this sucks
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import de.mktz.mst.contactsgrill.R;
 import de.mktz.mst.contactsgrill.database.pockets.DB_Contact_Pocket;
 
@@ -50,6 +51,7 @@ public class DB_Contact {
         return  id;
     }
     public String getName() {
+        if (name == null) name = "fehler bei Namens Inizialisierung";//getResources().getString(R.string.missing_name);
         return name;
     }
     public boolean getTracked(){

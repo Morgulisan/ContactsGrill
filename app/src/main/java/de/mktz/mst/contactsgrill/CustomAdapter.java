@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,10 +106,11 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         }
 
         //this.lastPosition = position;
+        assert dataModel != null;
         if(dataModel.getPhotoUri() != null) {viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));}
         else viewHolder.contactImageView.setImageDrawable(null);
         viewHolder.contactNameTextView.setText(dataModel.getName());
-        viewHolder.contactInfoTextView.setText(String.format("%d",dataModel.getId()));
+        viewHolder.contactInfoTextView.setText(String.format(Locale.GERMAN,"%d",dataModel.getId()));
         viewHolder.contactFollowView.setChecked(dataModel.getTracked());
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,6 +152,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             viewHolder = (ViewHolderMain) convertView.getTag();
         }
         viewHolder.contactedCheck.setChecked(false);
+        assert dataModel != null;
         viewHolder.contactNameTextView.setText(dataModel.getName());
         viewHolder.contactInfoText.setText(TimestampToDateText(dataModel.getLastContactTime()));
         if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
@@ -194,6 +195,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         } else {
             viewHolder = (ViewHolderProgress) convertView.getTag();
         }
+        assert dataModel != null;
         viewHolder.contactNameTextView.setText(dataModel.getName());
         viewHolder.contactProgress.setProgress((int) (dataModel.getCompleteness() *100));
         viewHolder.progressText.setText(String.format(Locale.GERMAN,"%d%%",(int) (dataModel.getCompleteness() *100)));
@@ -215,7 +217,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
     }
 
     private static String TimestampToDateText(long timestamp){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy",Locale.GERMAN);
         Date netDate = (new Date(timestamp));
         return sdf.format(netDate);
     }
