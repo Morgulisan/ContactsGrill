@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DB_Handler extends SQLiteOpenHelper{
 
@@ -156,7 +158,6 @@ public class DB_Handler extends SQLiteOpenHelper{
         Cursor phones = db.query("phoneNumbers",null,"id=?",new String[]{String.valueOf(contactID)},null,null,null);
         if(phones.moveToFirst()) do {
             rc.addPhoneNumber(phones.getString(phones.getColumnIndex("number")));
-            Log.d("test","added number ");
         }while (phones.moveToNext());
         phones.close();
         return rc;
@@ -209,6 +210,17 @@ public class DB_Handler extends SQLiteOpenHelper{
     public ArrayList<DB_Contact> getListOfTrackedContacts(){
         return getListOfAllContacts(null,"tracked=1",null,null);
     }
+    public ArrayList<DB_Contact> getListOfIncompleteContacts(){
+        ArrayList<DB_Contact> r = getListOfAllContacts(null,"tracked=1",null,null);
+        //r.removeIf(s -> s.getCompleteness() == 1f);
+        Collections.sort(r,new Comparator<DB_Contact>() {
+            public int compare(DB_Contact o1, DB_Contact o2) {
+                //Log.d("malte","Sorted " + o1.getCompleteness() + " vs " + o2.getCompleteness() + " as "  +  (int)((o1.getCompleteness() - o2.getCompleteness()) *100));
+                return (int)((o1.getCompleteness() - o2.getCompleteness()) *100);
+            }
+        });
+        return r;
+    }
 
     private ArrayList<DB_Contact> getListOfAllContacts(String[] columns, String selection, String[] selectArgs, String orderBy){
         SQLiteDatabase db = getReadableDatabase();
@@ -232,6 +244,11 @@ public class DB_Handler extends SQLiteOpenHelper{
                     rc.setBirthday(cursor.getString(indexBirthday));
                 }
                 rc.setLastContactTime(cursor.getLong(indexLastCon));
+                Cursor phones = db.query("phoneNumbers",null,"id=?",new String[]{String.valueOf(cursor.getInt(indexID))},null,null,null);//TODO join Tables
+                if(phones.moveToFirst()) do {
+                    rc.addPhoneNumber(phones.getString(phones.getColumnIndex("number")));
+                }while (phones.moveToNext());
+                phones.close();
                 listOfResults.add(rc);
             } while (cursor.moveToNext());
         }

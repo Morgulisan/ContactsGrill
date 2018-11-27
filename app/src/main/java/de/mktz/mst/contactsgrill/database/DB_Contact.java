@@ -78,7 +78,7 @@ public class DB_Contact {
         if(completeness <= 0) {
             if(completeTasks == null) completeTasks = new HashMap<>();
             else completeTasks.clear();
-            int tasks = 4;
+            float tasks = 4f;
             float completes = 0f;
             completes += completenessName();
             completes += completenessBirthday();
@@ -109,8 +109,11 @@ public class DB_Contact {
         return 0;
     }
     private float completenessPhoneNumbers(){
-        float completeness = 0f;
-        if(phoneNumbers != null){
+        float completeness = 0f; //TODO CHECK PHONE POCKET
+        if(phoneNumbers == null){
+            throw new Error("Missing Phone Numbers #98021401");
+        }
+        else {
             float numberPercent = 1f;
             for (String number : phoneNumbers){
                 float numberP = 1f;

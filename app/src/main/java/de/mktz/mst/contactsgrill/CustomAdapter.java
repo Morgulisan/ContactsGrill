@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -68,7 +69,6 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
 
     }
 
-    //private int lastPosition = -1;
 
     @Override @NonNull
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -80,9 +80,8 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             case VIEW_PROGRESS:
                 return InflateProgress(position,convertView,parent);
             default:
-                Log.d("malte", "Failed Switch");
+                throw new Error("Failed Switch #343525871");
         }
-        return convertView;
     }
 
     private View InflateTrack(int position, View convertView,@NonNull ViewGroup parent){
@@ -197,7 +196,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         }
         viewHolder.contactNameTextView.setText(dataModel.getName());
         viewHolder.contactProgress.setProgress((int) (dataModel.getCompleteness() *100));
-        viewHolder.progressText.setText((int) (dataModel.getCompleteness() *100) + "%");
+        viewHolder.progressText.setText(String.format(Locale.GERMAN,"%d%%",(int) (dataModel.getCompleteness() *100)));
 
         if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
         else viewHolder.contactImageView.setImageDrawable(null);

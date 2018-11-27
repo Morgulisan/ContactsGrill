@@ -42,7 +42,7 @@
         android:layout_marginStart="8dp"
         android:indeterminate="false"
         android:max="100"
-        android:progress="20"
+        android:progress="80"
         android:progressDrawable="@drawable/custom_progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

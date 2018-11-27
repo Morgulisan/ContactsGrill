@@ -1,8 +1,8 @@
 package de.mktz.mst.contactsgrill;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -93,10 +93,11 @@ public class GrillMenuFragment extends Fragment {
                 dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(DB_Handler.SortParameter.SORT_BIRTHDAY);
                 break;
             case "4":
-                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
+                dataModels = viewModel.getDatabaseHandler().getListOfIncompleteContacts();
                 vt = CustomAdapter.ViewType.VIEW_PROGRESS;
+                break;
             default:
-
+                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
         }
         adapter = new CustomAdapter(dataModels, getActivity().getApplicationContext(), vt);
         listView.setAdapter(adapter);
@@ -105,17 +106,12 @@ public class GrillMenuFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        contactsToMenu();
+        //contactsToMenu(); //TODO if List changed, update
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull  LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_grill_menu, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
     }
 }

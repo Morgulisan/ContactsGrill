@@ -7,7 +7,7 @@
             android:useLevel="false"
             android:type="sweep"
             android:thicknessRatio="10.0">
-            <solid android:color="@color/lightText"/>
+            <solid android:color="#bbb"/>
         </shape>
     </item>
     <item android:id="@android:id/progress">
