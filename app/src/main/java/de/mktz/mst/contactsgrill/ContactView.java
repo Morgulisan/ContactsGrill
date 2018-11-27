@@ -11,10 +11,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -61,12 +58,12 @@ public class ContactView extends AppCompatActivity {
             ((TextView) findViewById(R.id.BirtdayInfo)).setText(R.string.missing_birthday);
             ((TextView) findViewById(R.id.BirtdayInfo)).setTextColor(Color.RED);
         }
-        ((TextView) findViewById(R.id.completeInfoField)).setText("Kontakt " + (int) (contact.getCompleteness() * 100)  + "% komplett"); //TODO
+        ((TextView) findViewById(R.id.completeInfoField)).setText(String.format(getResources().getString(R.string.contact_view_completeness),(int) (contact.getCompleteness() * 100)));//TODO
         if(contact.getCompleteness() != 1f){
             ((ImageView) findViewById(R.id.completenessIcon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_24dp,null));
             //TODO Color
         }
-        if(!contact.getPhoneNumbers().isEmpty() )((TextView) findViewById(R.id.infoFeld2)).setText(contact.getPhoneNumbers().size() + ":" +  contact.getPhoneNumbers().get(0));
+        if(!contact.getPhoneNumbers().isEmpty() )((TextView) findViewById(R.id.infoFeld2)).setText(String.format("%s",contact.getPhoneNumbers().get(0)));
     }
 
     void getDebugData(long id){
@@ -99,17 +96,14 @@ public class ContactView extends AppCompatActivity {
                 builder.append("\n");
 
 
-                if (cursor.getCount() > 0) {
-                    LinearLayout linLayout = findViewById(R.id.detailsContainer);
-
-
+                if (cursor != null && cursor.getCount() > 0) {
+                    //LinearLayout linLayout = findViewById(R.id.detailsContainer);
                     while (cursor.moveToNext()) {
                         if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equals(contact.getName())) {
                             int count = cursor.getColumnCount();
                             while(count-- > 0){
                                 // add as view
                                 //addEntry(cursor.getColumnName(count), cursor.getString(count), linLayout);
-
                                 // add to debug text
                                 builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                             }
@@ -120,9 +114,9 @@ public class ContactView extends AppCompatActivity {
                             builder.append(id).append(": Name : ").append(name).append(" LOOKUP : ").append(lookup).append("\n LOOKUP_URI : ").append(lookupURI).append("\n");
                         }
                     }
+                    cursor.close();
                 }
                 else builder.append("Invalid Contact");
-                cursor.close();
                 ((TextView) findViewById(R.id.debugText)).setText(builder.toString());
             } catch (Exception e) {
                 ((TextView) findViewById(R.id.debugText)).setText(e.getMessage());
@@ -131,6 +125,7 @@ public class ContactView extends AppCompatActivity {
         ((TextView) findViewById(R.id.debugText)).append(contact.getPhoneNumbers().toString());
     }
 
+    /*
     private void addEntry(String id, String value, ViewGroup root) {
         View v = getLayoutInflater().inflate(R.layout.contact_detail_item, root, false);
         TextView desc = v.findViewById(R.id.descriptor);
@@ -146,7 +141,7 @@ public class ContactView extends AppCompatActivity {
 
         if (!descString.equals("-"))
             root.addView(v);
-    }
+    }*/
 
     private static String DebugBirthdayMess(String birthday){
         String age = "";
