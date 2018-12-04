@@ -182,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return "Kontakte";
                 case 2:
                     return "Events";
+                case 3:
+                    return "Vervollständigen";
                 default:
                     return "Page " + (position + 1);
             }

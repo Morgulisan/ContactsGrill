@@ -4,13 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -33,6 +38,7 @@ public class GrillMenuFragment extends Fragment {
     private String groupName;
 
     private GrillMenuViewModel viewModel;
+    private int sortMode = 0;
 
     ArrayList<DB_Contact> dataModels;
     CustomAdapter adapter;
@@ -64,7 +70,6 @@ public class GrillMenuFragment extends Fragment {
         if (getArguments() != null) {
             groupName = getArguments().getString(ARG_GROUP_NAME);
         }
-
     }
 
     @Override
@@ -106,12 +111,57 @@ public class GrillMenuFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //contactsToMenu(); //TODO if List changed, update
+        adapter.notifyDataSetChanged(); //TODO if List changed, update
     }
 
     @Override
     public View onCreateView(@NonNull  LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_grill_menu, container, false);
+        View newView = inflater.inflate(R.layout.fragment_grill_menu, container, false);
+        FloatingActionButton fab = newView.findViewById(R.id.changeSort);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortMode = ++sortMode % 4;
+                sortContacts(dataModels,sortMode);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        return newView;
+    }
+
+
+
+    public static void sortContacts(ArrayList<DB_Contact> list,int sortType){
+        switch (sortType) {
+            case 0:
+                Collections.sort(list, new Comparator<DB_Contact>() {
+                    public int compare(DB_Contact o1, DB_Contact o2) {
+                        return (int) ((o1.getLastContactTime() - o2.getLastContactTime()));
+                    }
+                });
+                break;
+            case 1:
+                Collections.sort(list, new Comparator<DB_Contact>() {
+                    public int compare(DB_Contact o1, DB_Contact o2) {
+                        return (int) ((o1.getId() - o2.getId()));
+                    }
+                });
+                break;
+            case 2:
+                Collections.sort(list, new Comparator<DB_Contact>() {
+                    public int compare(DB_Contact o1, DB_Contact o2) {
+                        if (o1.getName() == null || o2.getName() == null) return 999;
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                });
+                break;
+            default:
+            Collections.sort(list, new Comparator<DB_Contact>() {
+                public int compare(DB_Contact o1, DB_Contact o2) {
+                    return (int) ((o1.getCompleteness() - o2.getCompleteness()) * 100);
+                }
+            });
+        }
     }
 }

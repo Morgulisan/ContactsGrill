@@ -30,10 +30,10 @@
                 android:layout_height="?attr/actionBarSize"
                 android:layout_weight="1"
                 android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
+                app:layout_scrollFlags="enterAlways"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 app:title="@string/app_name">
-
+                <!--TODO  app:layout_scrollFlags="scroll|enterAlways" fix with Listview and floating action button missing-->
             </android.support.v7.widget.Toolbar>
 
             <android.support.design.widget.TabLayout

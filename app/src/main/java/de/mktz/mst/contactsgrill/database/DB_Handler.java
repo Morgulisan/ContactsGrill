@@ -157,7 +157,10 @@ public class DB_Handler extends SQLiteOpenHelper{
         cursor.close();
         Cursor phones = db.query("phoneNumbers",null,"id=?",new String[]{String.valueOf(contactID)},null,null,null);
         if(phones.moveToFirst()) do {
-            rc.addPhoneNumber(phones.getString(phones.getColumnIndex("number")));
+            String newNumber = phones.getString(phones.getColumnIndex("number"));
+            boolean contained = false;
+            for(String number : rc.getPhoneNumbers()){ if(number.equals(newNumber)) contained = true;}
+            if(!contained)rc.addPhoneNumber(newNumber);
         }while (phones.moveToNext());
         phones.close();
         return rc;
@@ -246,7 +249,10 @@ public class DB_Handler extends SQLiteOpenHelper{
                 rc.setLastContactTime(cursor.getLong(indexLastCon));
                 Cursor phones = db.query("phoneNumbers",null,"id=?",new String[]{String.valueOf(cursor.getInt(indexID))},null,null,null);//TODO join Tables
                 if(phones.moveToFirst()) do {
-                    rc.addPhoneNumber(phones.getString(phones.getColumnIndex("number")));
+                    String newNumber = phones.getString(phones.getColumnIndex("number"));
+                    boolean contained = false;
+                    for(String number : rc.getPhoneNumbers()){ if(number.equals(newNumber)) contained = true;}
+                    if(!contained)rc.addPhoneNumber(newNumber);
                 }while (phones.moveToNext());
                 phones.close();
                 listOfResults.add(rc);
