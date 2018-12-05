@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M17,13.7l0,-7h2v7h3l-4,4l-4,-4h3zM4,19L12,5h2L6,19H4zM6,5c1,0 2,1 2,2v2c0,1 -1,2 -2,2s-2,-1 -2,-2v-2c0,-1 1,-2 2,-2zm0,1c0.5,0 1,0.5 1,1v2c0,0.5 -0.5,1 -1,1s-1,-0.5 -1,-1v-2c0,-0.5 0.5,-1 1,-1zM12,13c1,0 2,1 2,2v2c0,1 -1,2 -2,2s-2,-1 -2,-2v-2c0,-1 1,-2 2,-2zm0,1c0.5,0 1,0.5 1,1v2c0,0.5 -0.5,1 -1,1s-1,-0.5 -1,-1v-2c0,-0.5 0.5,-1 1,-1z"/>
+    <!--TODO Manually written, no Holes -->
+</vector>

@@ -23,6 +23,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:tint="@android:color/white"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_sort_24dp" />
+        app:srcCompat="@drawable/ic_sort_by_name" />
 
 </FrameLayout>

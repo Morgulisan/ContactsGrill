@@ -1,6 +1,8 @@
 package de.mktz.mst.contactsgrill;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,11 +40,12 @@ public class GrillMenuFragment extends Fragment {
     private String groupName;
 
     private GrillMenuViewModel viewModel;
-    private int sortMode = 0;
+    private static int sortMode = 0;
 
     ArrayList<DB_Contact> dataModels;
     CustomAdapter adapter;
     ListView listView;
+     FloatingActionButton fab;
 
     public GrillMenuFragment() {
         // Required empty public constructor
@@ -118,11 +121,12 @@ public class GrillMenuFragment extends Fragment {
     public View onCreateView(@NonNull  LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View newView = inflater.inflate(R.layout.fragment_grill_menu, container, false);
-        FloatingActionButton fab = newView.findViewById(R.id.changeSort);
+        fab = newView.findViewById(R.id.changeSort);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sortMode = ++sortMode % 4;
+                fab.setImageDrawable(getSortIcon(getResources(),sortMode));
                 sortContacts(dataModels,sortMode);
                 adapter.notifyDataSetChanged();
             }
@@ -156,12 +160,33 @@ public class GrillMenuFragment extends Fragment {
                     }
                 });
                 break;
+            case 3:
+                Collections.sort(list, new Comparator<DB_Contact>() {
+                    public int compare(DB_Contact o1, DB_Contact o2) {
+                        return (int) ((o1.getCompleteness() - o2.getCompleteness()) * 100);
+                    }
+                });
             default:
-            Collections.sort(list, new Comparator<DB_Contact>() {
-                public int compare(DB_Contact o1, DB_Contact o2) {
-                    return (int) ((o1.getCompleteness() - o2.getCompleteness()) * 100);
-                }
-            });
+                Collections.sort(list, new Comparator<DB_Contact>() {
+                    public int compare(DB_Contact o1, DB_Contact o2) {
+                        return (int) ((o1.getId() - o2.getId()));
+                    }
+                });
         }
     }
+    private static Drawable getSortIcon(Resources r, int sortType) {
+        switch (sortType) {
+            case 0:
+                return r.getDrawable(R.drawable.ic_sort_lastseen, null);
+            case 1:
+                return r.getDrawable(R.drawable.ic_sort_person, null);
+            case 2:
+                return r.getDrawable(R.drawable.ic_sort_by_name, null);
+            case 3:
+                return r.getDrawable(R.drawable.ic_sort_completeness, null);
+            default:
+                return r.getDrawable(R.drawable.ic_sort_24dp, null);
+        }
+    }
+
 }
