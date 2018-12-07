@@ -125,7 +125,7 @@ public class GrillMenuFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortMode = ++sortMode % 4;
+                sortMode = ++sortMode % 5;
                 fab.setImageDrawable(getSortIcon(getResources(),sortMode));
                 sortContacts(dataModels,sortMode);
                 adapter.notifyDataSetChanged();
@@ -166,6 +166,7 @@ public class GrillMenuFragment extends Fragment {
                         return (int) ((o1.getCompleteness() - o2.getCompleteness()) * 100);
                     }
                 });
+                break;
             default:
                 Collections.sort(list, new Comparator<DB_Contact>() {
                     public int compare(DB_Contact o1, DB_Contact o2) {
