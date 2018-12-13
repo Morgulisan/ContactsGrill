@@ -1,17 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/informationIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:tint="@color/lightText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/birthday_cake_24dp" />
+
     <TextView
         android:id="@+id/descriptor"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Name"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/lightText"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/informationIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Name" />
+
     <TextView
         android:id="@+id/value"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Tobian christian (Zu parties einladen)"/>
-</LinearLayout>
+        android:layout_marginStart="8dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/informationIcon"
+        app:layout_constraintTop_toBottomOf="@+id/descriptor"
+        tools:text="Tobian christian (Zu parties einladen)" />
+
+</android.support.constraint.ConstraintLayout>

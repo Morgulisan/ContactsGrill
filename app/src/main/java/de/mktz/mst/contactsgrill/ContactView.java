@@ -12,7 +12,10 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -98,13 +101,10 @@ public class ContactView extends AppCompatActivity {
 
 
                 if (cursor != null && cursor.getCount() > 0) {
-                    //LinearLayout linLayout = findViewById(R.id.detailsContainer);
                     while (cursor.moveToNext()) {
                         if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equals(contact.getName())) {
                             int count = cursor.getColumnCount();
                             while(count-- > 0){
-                                // add as view
-                                //addEntry(cursor.getColumnName(count), cursor.getString(count), linLayout);
                                 // add to debug text
                                 builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                             }
@@ -121,13 +121,15 @@ public class ContactView extends AppCompatActivity {
 
                 cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI, null, null, null, null, null);
                 if (cursor != null && cursor.getCount() > 0) {
+                    LinearLayout linLayout = findViewById(R.id.detailsContainer);
                     //LinearLayout linLayout = findViewById(R.id.detailsContainer);
                     while (cursor.moveToNext()) {
                         if(cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)).equals(contact.getName())) {
+                            addDataEntry(cursor, linLayout);
                             int count = cursor.getColumnCount();
                             while(count-- > 0){
                                 // add as view
-                                //addEntry(cursor.getColumnName(count), cursor.getString(count), linLayout);
+                                //if(cursor.getString(count) != null) addDataEntry(cursor.getString(cursor.getColumnIndex("mimetype")),cursor.getColumnName(count), cursor.getString(count), linLayout);
                                 // add to debug text
                                 try {
                                     if(cursor.getColumnName(count).equals("mimetype")) Log.d("malte",cursor.getString(count));
@@ -149,7 +151,7 @@ public class ContactView extends AppCompatActivity {
         ((TextView) findViewById(R.id.debugText)).append(contact.getPhoneNumbers().toString());
     }
 
-    /*
+
     private void addEntry(String id, String value, ViewGroup root) {
         View v = getLayoutInflater().inflate(R.layout.contact_detail_item, root, false);
         TextView desc = v.findViewById(R.id.descriptor);
@@ -165,7 +167,47 @@ public class ContactView extends AppCompatActivity {
 
         if (!descString.equals("-"))
             root.addView(v);
-    }*/
+    }
+
+
+    //TODO
+    private void addDataEntry(Cursor cursor, ViewGroup root) {
+        String mime = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.MIMETYPE));
+        String info;
+        String value;
+
+        View v = getLayoutInflater().inflate(R.layout.contact_detail_item, root, false);
+        TextView desc = v.findViewById(R.id.descriptor);
+        TextView val = v.findViewById(R.id.value);
+        ImageView icon = v.findViewById(R.id.informationIcon);
+
+        switch (mime){
+            case "vnd.android.cursor.item/phone_v2": //TODO Constants
+                icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_phone_black_24dp,null));
+                info = "phone"; //TODO type
+                value = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                break;
+            case "vandnd.roid.cursor.item/email_v2": //TODO Constants
+                icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_mail_outline_black_24dp,null));
+                info = "mail"; //TODO Type
+                value = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                break;
+            default:
+                Log.d("malte",mime);
+                return;
+        }
+
+        String descString = info;
+        int resId = getResources().getIdentifier(info, "string", getPackageName());
+        if (resId != 0)
+            descString = getString(resId);
+
+        desc.setText(descString);
+        val.setText(value);
+
+        if (!descString.equals("-"))
+            root.addView(v);
+    }
 
     private static String DebugBirthdayMess(String birthday){
         String age = "";
