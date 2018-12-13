@@ -187,7 +187,7 @@ public class ContactView extends AppCompatActivity {
                 info = "phone"; //TODO type
                 value = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 break;
-            case "vandnd.roid.cursor.item/email_v2": //TODO Constants
+            case "vnd.android.cursor.item/email_v2": //TODO Constants
                 icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_mail_outline_black_24dp,null));
                 info = "mail"; //TODO Type
                 value = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
