@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -117,6 +118,29 @@ public class ContactView extends AppCompatActivity {
                     cursor.close();
                 }
                 else builder.append("Invalid Contact");
+
+                cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI, null, null, null, null, null);
+                if (cursor != null && cursor.getCount() > 0) {
+                    //LinearLayout linLayout = findViewById(R.id.detailsContainer);
+                    while (cursor.moveToNext()) {
+                        if(cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)).equals(contact.getName())) {
+                            int count = cursor.getColumnCount();
+                            while(count-- > 0){
+                                // add as view
+                                //addEntry(cursor.getColumnName(count), cursor.getString(count), linLayout);
+                                // add to debug text
+                                try {
+                                    if(cursor.getColumnName(count).equals("mimetype")) Log.d("malte",cursor.getString(count));
+                                    if(cursor.getString(count) != null)
+                                        builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
+                                }catch (Exception e) { Log.d("malte",e.getMessage());}
+
+                            }
+                        }
+                    }
+                    cursor.close();
+                }
+
                 ((TextView) findViewById(R.id.debugText)).setText(builder.toString());
             } catch (Exception e) {
                 ((TextView) findViewById(R.id.debugText)).setText(e.getMessage());
