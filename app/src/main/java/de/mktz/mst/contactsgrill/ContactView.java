@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -16,15 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Random;
 import java.util.function.BiConsumer;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
+import de.mktz.mst.contactsgrill.newContacts.ContactReader;
 
 public class ContactView extends AppCompatActivity {
 
@@ -47,8 +49,8 @@ public class ContactView extends AppCompatActivity {
     }
 
     private void FillData(long id){
-        DB_Handler handler = new DB_Handler(this);
-        DB_Contact contact = handler.getContactByID(id);
+        final DB_Handler handler = new DB_Handler(this);
+        final DB_Contact contact = handler.getContactByID(id);
         ((TextView) findViewById(R.id.displayNameView)).setText(contact.getName());
         if(contact.getPhotoUri() != null) {
             ImageView image = findViewById(R.id.profileImage);
@@ -68,13 +70,32 @@ public class ContactView extends AppCompatActivity {
             //TODO Color
         }
         if(!contact.getPhoneNumbers().isEmpty() )((TextView) findViewById(R.id.infoFeld2)).setText(String.format("%s",contact.getPhoneNumbers().get(0)));
+        ((Switch)findViewById(R.id.followed)).setChecked(contact.getTracked());
+        findViewById(R.id.followed).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                contact.setTracked(((Switch) findViewById(R.id.followed)).isChecked());
+                handler.updateContactTrack(contact.getId(),((Switch) findViewById(R.id.followed)).isChecked());
+            }
+        });
+        //DEBUG
+
+        ContactReader cr = new ContactReader(getApplicationContext());
+        int count = 10;
+        long a = (long)(new Random().nextInt(620));
+        while(count-- != 0 && a != 0) {
+            cr.getContactByID(a--).DEBUG_Log();
+        }
+
+        //DEBUG END
     }
 
     void getDebugData(long id){
+
         DB_Handler handler = new DB_Handler(this);
         DB_Contact contact = handler.getContactByID(id);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (/*Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && */checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 1160);
             ((TextView) findViewById(R.id.debugText)).setText("...");
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
@@ -85,20 +106,16 @@ public class ContactView extends AppCompatActivity {
                 final StringBuilder builder = new StringBuilder();
                 ContentResolver contentResolver = getContentResolver();
                 Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
+                contact.getCompletingTasks().forEach(new BiConsumer<String, Integer>() {
+                    @Override
+                    public void accept(String s, Integer integer) {
+                        if(s.substring(0,1).equals("#"))
+                        builder.append(s).append(": ");
+                        builder.append(getResources().getString(integer)).append("\n");
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ) {
-                    contact.getCompletingTasks().forEach(new BiConsumer<String, Integer>() {
-                        @Override
-                        public void accept(String s, Integer integer) {
-                            if(s.substring(0,1).equals("#"))
-                            builder.append(s).append(": ");
-                            builder.append(getResources().getString(integer)).append("\n");
-
-                        }
-                    });
-                }
+                    }
+                });
                 builder.append("\n");
-
 
                 if (cursor != null && cursor.getCount() > 0) {
                     while (cursor.moveToNext()) {
@@ -132,7 +149,7 @@ public class ContactView extends AppCompatActivity {
                                 //if(cursor.getString(count) != null) addDataEntry(cursor.getString(cursor.getColumnIndex("mimetype")),cursor.getColumnName(count), cursor.getString(count), linLayout);
                                 // add to debug text
                                 try {
-                                    if(cursor.getColumnName(count).equals("mimetype")) Log.d("malte",cursor.getString(count));
+                                    if(cursor.getColumnName(count).equals("mimetype")) //Log.d("malte",cursor.getString(count));
                                     if(cursor.getString(count) != null)
                                         builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                                 }catch (Exception e) { Log.d("malte",e.getMessage());}
@@ -193,7 +210,7 @@ public class ContactView extends AppCompatActivity {
                 value = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
                 break;
             default:
-                Log.d("malte",mime);
+                //Log.d("malte",mime);
                 return;
         }
 
@@ -238,4 +255,5 @@ public class ContactView extends AppCompatActivity {
         }
         return diff;
     }
+
 }
