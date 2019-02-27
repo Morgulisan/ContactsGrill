@@ -22,9 +22,10 @@ import java.util.Locale;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
+import de.mktz.mst.contactsgrill.newContacts.ContactWrapper;
 
 
-public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnClickListener{
+public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.OnClickListener{
 
     private Context activityContext;
     private final ViewType viewType;
@@ -54,7 +55,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         VIEW_PROGRESS
     }
 
-    CustomAdapter(ArrayList<DB_Contact> data, Context context, ViewType vt) {
+    CustomAdapter(ArrayList<ContactWrapper> data, Context context, ViewType vt) {
         super(context, R.layout.list_contact_card, data);
         //this.dataSet = data;
         activityContext=context;
@@ -84,7 +85,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
     }
 
     private View InflateTrack(int position, View convertView,@NonNull ViewGroup parent){
-        final DB_Contact dataModel = getItem(position);
+        final ContactWrapper dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolderToggleTrack viewHolder; // view lookup cache stored in tag
 
@@ -135,7 +136,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         return convertView;
     }
     private View InflateMain(int position, View convertView,@NonNull ViewGroup parent){
-        final DB_Contact dataModel = getItem(position);
+        final ContactWrapper dataModel = getItem(position);
         ViewHolderMain viewHolder;
         if (convertView == null) {
 
@@ -179,7 +180,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         return convertView;
     }
     private View InflateProgress(int position, View convertView,@NonNull ViewGroup parent){
-        final DB_Contact dataModel = getItem(position);
+        final ContactWrapper dataModel = getItem(position);
         ViewHolderProgress viewHolder;
         if (convertView == null) {
 

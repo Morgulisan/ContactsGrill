@@ -19,6 +19,7 @@ import java.util.Comparator;
 
 import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
+import de.mktz.mst.contactsgrill.newContacts.ContactWrapper;
 import de.mktz.mst.contactsgrill.viewModel.GrillMenuViewModel;
 
 
@@ -40,10 +41,10 @@ public class GrillMenuFragment extends Fragment {
     private GrillMenuViewModel viewModel;
     private static int sortMode = 0;
 
-    ArrayList<DB_Contact> dataModels;
+    ArrayList<ContactWrapper> dataModels;
     CustomAdapter adapter;
     ListView listView;
-     FloatingActionButton fab;
+    FloatingActionButton fab;
 
     public GrillMenuFragment() {
         // Required empty public constructor
@@ -134,40 +135,40 @@ public class GrillMenuFragment extends Fragment {
 
 
 
-    public static void sortContacts(ArrayList<DB_Contact> list,int sortType){
+    public static void sortContacts(ArrayList<ContactWrapper> list, int sortType){
         switch (sortType) {
             case 0:
-                Collections.sort(list, new Comparator<DB_Contact>() {
-                    public int compare(DB_Contact o1, DB_Contact o2) {
+                Collections.sort(list, new Comparator<ContactWrapper>() {
+                    public int compare(ContactWrapper o1, ContactWrapper o2) {
                         return (int) ((o1.getLastContactTime() - o2.getLastContactTime()));
                     }
                 });
                 break;
             case 1:
-                Collections.sort(list, new Comparator<DB_Contact>() {
-                    public int compare(DB_Contact o1, DB_Contact o2) {
+                Collections.sort(list, new Comparator<ContactWrapper>() {
+                    public int compare(ContactWrapper o1, ContactWrapper o2) {
                         return (int) ((o1.getId() - o2.getId()));
                     }
                 });
                 break;
             case 2:
-                Collections.sort(list, new Comparator<DB_Contact>() {
-                    public int compare(DB_Contact o1, DB_Contact o2) {
+                Collections.sort(list, new Comparator<ContactWrapper>() {
+                    public int compare(ContactWrapper o1, ContactWrapper o2) {
                         if (o1.getDisplayName() == null || o2.getDisplayName() == null) return 999;
                         return o1.getDisplayName().compareTo(o2.getDisplayName());
                     }
                 });
                 break;
             case 3:
-                Collections.sort(list, new Comparator<DB_Contact>() {
-                    public int compare(DB_Contact o1, DB_Contact o2) {
+                Collections.sort(list, new Comparator<ContactWrapper>() {
+                    public int compare(ContactWrapper o1, ContactWrapper o2) {
                         return (int) ((o1.getCompleteness() - o2.getCompleteness()) * 100);
                     }
                 });
                 break;
             default:
-                Collections.sort(list, new Comparator<DB_Contact>() {
-                    public int compare(DB_Contact o1, DB_Contact o2) {
+                Collections.sort(list, new Comparator<ContactWrapper>() {
+                    public int compare(ContactWrapper o1, ContactWrapper o2) {
                         return (int) ((o1.getId() - o2.getId()));
                     }
                 });

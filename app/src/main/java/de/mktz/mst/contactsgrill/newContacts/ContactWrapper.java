@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.mktz.mst.contactsgrill.R;
-import de.mktz.mst.contactsgrill.database.pockets.DB_Contact_Pocket;
 
 public class ContactWrapper {
 
@@ -53,6 +52,9 @@ public class ContactWrapper {
     public void setTracked(boolean track){
         this.isTracked = track;
         Log.e("malte","SetTrack() does currently not work");
+    }
+    public void setLastContactTime(long lastContactTime){
+        Log.e("malte","setLastContactTime() does currently not work, set time to " + lastContactTime);
     }
 
     public long getDeviceContactId(){

@@ -154,7 +154,7 @@ public class ContactView extends AppCompatActivity {
                                 //if(cursor.getString(count) != null) addDataEntry(cursor.getString(cursor.getColumnIndex("mimetype")),cursor.getColumnName(count), cursor.getString(count), linLayout);
                                 // add to debug text
                                 try {
-                                    if(cursor.getColumnName(count).equals("mimetype")) Log.d("malte",cursor.getString(count));
+                                    if(cursor.getColumnName(count).equals("mimetype"))// Log.d("malte",cursor.getString(count));
                                     if(cursor.getString(count) != null)
                                         builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                                 }catch (Exception e) { Log.d("malte",e.getMessage());}

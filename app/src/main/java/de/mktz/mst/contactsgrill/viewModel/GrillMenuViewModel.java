@@ -3,16 +3,15 @@ package de.mktz.mst.contactsgrill.viewModel;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
-import android.os.Build;
 
 import de.mktz.mst.contactsgrill.database.DB_ContactLoader;
-import de.mktz.mst.contactsgrill.database.DB_Handler;
+import de.mktz.mst.contactsgrill.newContacts.ContactReader;
 
 public class GrillMenuViewModel {
     private static GrillMenuViewModel ourInstance = null;
 
     private Application application;
-    private DB_Handler databaseHandler;
+    private ContactReader contactReader;
 
     public static GrillMenuViewModel getInstance(Application application) {
         if (ourInstance == null)
@@ -34,8 +33,7 @@ public class GrillMenuViewModel {
     }
 
     private boolean hasPermissionsRequired(){
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                application.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+        return application.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void updateDatabase() {
@@ -49,10 +47,10 @@ public class GrillMenuViewModel {
     }
 
     private void initDatabase() {
-        databaseHandler = new DB_Handler(application);
+        contactReader = new ContactReader(application);
     }
 
-    public DB_Handler getDatabaseHandler() {
-        return databaseHandler;
+    public ContactReader getDatabaseHandler() {
+        return contactReader;
     }
 }

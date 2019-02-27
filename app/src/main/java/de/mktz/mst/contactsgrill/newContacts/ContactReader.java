@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
+import de.mktz.mst.contactsgrill.database.DB_Handler;
+
 import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static android.support.v4.content.ContextCompat.startActivity;
 
@@ -33,7 +35,6 @@ public class ContactReader {
     public ContactWrapper getContactByID(Long id) {
         if(!hasPermission()) return null; //TODO throw exception?
 
-
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, "_ID = '" + id + "'", null, null, null);
 
@@ -48,6 +49,38 @@ public class ContactReader {
         cursor.close();
         return cw;
     }
+    public ArrayList<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){ //TODO remove DB_Handler
+        //TODO
+        Log.e("malte","getListOf* is not implemented");
+        ArrayList<ContactWrapper> r = new ArrayList<>();
+        r.add(getContactByID(11L));
+        r.add(getContactByID(12L));
+        r.add(getContactByID(13L));
+        r.add(getContactByID(14L));
+        r.add(getContactByID(15L));
+        r.add(getContactByID(16L));
+        r.add(getContactByID(17L));
+        r.add(getContactByID(18L));
+        r.add(getContactByID(19L));
+        return r;
+        //TODO Mockup
+    }
+
+    public ArrayList<ContactWrapper> getListOfTrackedContacts(DB_Handler.SortParameter sortParameter){
+        return getListOfAllContacts(sortParameter);
+    }
+    public ArrayList<ContactWrapper> getListOfIncompleteContacts(DB_Handler.SortParameter sortParameter){
+        return getListOfAllContacts(sortParameter);
+    }
+    public ArrayList<ContactWrapper> getListOfTrackedContacts(){
+        return getListOfAllContacts(null);
+    }
+    public ArrayList<ContactWrapper> getListOfIncompleteContacts(){
+        return getListOfAllContacts(null);
+    }
+    public ArrayList<ContactWrapper> getListOfAllContacts(){
+        return getListOfAllContacts(null);
+    }
 
 
     private boolean hasPermission(){
@@ -59,7 +92,6 @@ public class ContactReader {
         }
         return true;
     }
-
     public void updateContactTrack(Long contactId, boolean track){
         //TODO Implement
         Log.d("malte","Switched tracking of contact " + contactId + " to " + track);
