@@ -109,7 +109,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         assert dataModel != null;
         if(dataModel.getPhotoUri() != null) {viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));}
         else viewHolder.contactImageView.setImageDrawable(null);
-        viewHolder.contactNameTextView.setText(dataModel.getName());
+        viewHolder.contactNameTextView.setText(dataModel.getDisplayName());
         viewHolder.contactInfoTextView.setText(String.format(Locale.GERMAN,"%d",dataModel.getId()));
         viewHolder.contactFollowView.setChecked(dataModel.getTracked());
         convertView.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +153,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
         }
         viewHolder.contactedCheck.setChecked(false);
         assert dataModel != null;
-        viewHolder.contactNameTextView.setText(dataModel.getName());
+        viewHolder.contactNameTextView.setText(dataModel.getDisplayName());
         viewHolder.contactInfoText.setText(TimestampToDateText(dataModel.getLastContactTime()));
         if(dataModel.getPhotoUri() != null) viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));
         else viewHolder.contactImageView.setImageDrawable(null);
@@ -196,7 +196,7 @@ public class CustomAdapter extends ArrayAdapter<DB_Contact> implements View.OnCl
             viewHolder = (ViewHolderProgress) convertView.getTag();
         }
         assert dataModel != null;
-        viewHolder.contactNameTextView.setText(dataModel.getName());
+        viewHolder.contactNameTextView.setText(dataModel.getDisplayName());
         viewHolder.contactProgress.setProgress((int) (dataModel.getCompleteness() *100));
         viewHolder.progressText.setText(String.format(Locale.GERMAN,"%d%%",(int) (dataModel.getCompleteness() *100)));
 

@@ -51,7 +51,7 @@ public class DB_Handler extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("name",c.getName());
+        values.put("name",c.getDisplayName());
         values.put("tracked",c.getTracked());
         values.put("photoUri", c.getPhotoUri());
         values.put("firstContact", c.getFirstContactTime());

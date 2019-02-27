@@ -50,7 +50,7 @@ public class DB_Contact {
     public long getId(){
         return  id;
     }
-    public String getName() {
+    public String getDisplayName() {
         if (name == null) name = "fehler bei Namens Inizialisierung";//getResources().getString(R.string.missing_name);
         return name;
     }
@@ -139,13 +139,13 @@ public class DB_Contact {
     }
     private float completenessName(){
         float completeness = 1f;
-        if(getName().indexOf(' ') == -1 || getName().length() <= 6){
+        if(getDisplayName().indexOf(' ') == -1 || getDisplayName().length() <= 6){
             completeness -= 0.5f;
             addCompleteTask(COMPLETE_NAME_SHORT,R.string.complete_name_length);
         }
         String regexMatchName =  "^(([A-ZÄÖÜ][a-zäöüß]*(-[A-ZÄÖÜ]?[a-zäöüß]*)?|von) ?)*$";
         Pattern pattern = Pattern.compile(regexMatchName);
-        Matcher matcher = pattern.matcher(getName());
+        Matcher matcher = pattern.matcher(getDisplayName());
         if(!matcher.find()){
             completeness -= 0.5f;
             addCompleteTask(COMPLETE_NAME_CHARS, R.string.complete_name_chars);

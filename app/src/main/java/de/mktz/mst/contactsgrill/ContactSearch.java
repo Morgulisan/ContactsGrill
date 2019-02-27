@@ -96,8 +96,8 @@ public class ContactSearch extends AppCompatActivity {
             case 2:
                 Collections.sort(list, new Comparator<DB_Contact>() {
                     public int compare(DB_Contact o1, DB_Contact o2) {
-                        if (o1.getName() == null || o2.getName() == null) return 999;
-                        return o1.getName().compareTo(o2.getName());
+                        if (o1.getDisplayName() == null || o2.getDisplayName() == null) return 999;
+                        return o1.getDisplayName().compareTo(o2.getDisplayName());
                     }
                 });
                 break;

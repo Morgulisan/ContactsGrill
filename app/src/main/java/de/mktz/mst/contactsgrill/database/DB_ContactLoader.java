@@ -56,8 +56,8 @@ public class DB_ContactLoader {
                         contact.setPhotoUri(photo);
                         db_handler.updateContactPhotoURI(contactDbId,photo);
                     }
-                    if(name != null && !contact.getName().equals(name)){ //TODO is this even possible?
-                        Log.d("test", "Updating Name for " + name + " from " + contact.getName());
+                    if(name != null && !contact.getDisplayName().equals(name)){ //TODO is this even possible?
+                        Log.d("test", "Updating Name for " + name + " from " + contact.getDisplayName());
                         contact.setName(name);
                         db_handler.updateContactName(contactDbId,name);
                     }

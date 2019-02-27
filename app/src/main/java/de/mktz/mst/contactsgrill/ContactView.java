@@ -24,9 +24,8 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
-import de.mktz.mst.contactsgrill.database.DB_Contact;
-import de.mktz.mst.contactsgrill.database.DB_Handler;
 import de.mktz.mst.contactsgrill.newContacts.ContactReader;
+import de.mktz.mst.contactsgrill.newContacts.ContactWrapper;
 
 public class ContactView extends AppCompatActivity {
 
@@ -49,9 +48,9 @@ public class ContactView extends AppCompatActivity {
     }
 
     private void FillData(long id){
-        final DB_Handler handler = new DB_Handler(this);
-        final DB_Contact contact = handler.getContactByID(id);
-        ((TextView) findViewById(R.id.displayNameView)).setText(contact.getName());
+        final ContactReader reader = new ContactReader(this);
+        final ContactWrapper contact = reader.getContactByID(id);
+        ((TextView) findViewById(R.id.displayNameView)).setText(contact.getDisplayName());
         if(contact.getPhotoUri() != null) {
             ImageView image = findViewById(R.id.profileImage);
             image.setImageURI(Uri.parse(contact.getPhotoUri()));
@@ -75,7 +74,7 @@ public class ContactView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 contact.setTracked(((Switch) findViewById(R.id.followed)).isChecked());
-                handler.updateContactTrack(contact.getId(),((Switch) findViewById(R.id.followed)).isChecked());
+                reader.updateContactTrack(contact.getId(),((Switch) findViewById(R.id.followed)).isChecked());
             }
         });
         //DEBUG
@@ -92,10 +91,10 @@ public class ContactView extends AppCompatActivity {
 
     void getDebugData(long id){
 
-        DB_Handler handler = new DB_Handler(this);
-        DB_Contact contact = handler.getContactByID(id);
+        ContactReader reader = new ContactReader(this);
+        ContactWrapper contact = reader.getContactByID(id);
 
-        if (/*Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && */checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 1160);
             ((TextView) findViewById(R.id.debugText)).setText("...");
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
@@ -119,7 +118,7 @@ public class ContactView extends AppCompatActivity {
 
                 if (cursor != null && cursor.getCount() > 0) {
                     while (cursor.moveToNext()) {
-                        if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equals(contact.getName())) {
+                        if(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equals(contact.getDisplayName())) {
                             int count = cursor.getColumnCount();
                             while(count-- > 0){
                                 // add to debug text
@@ -147,7 +146,7 @@ public class ContactView extends AppCompatActivity {
                     LinearLayout linLayout = findViewById(R.id.detailsContainer);
                     //LinearLayout linLayout = findViewById(R.id.detailsContainer);
                     while (cursor.moveToNext()) {
-                        if(cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)).equals(contact.getName())) {
+                        if(cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)).equals(contact.getDisplayName())) {
                             addDataEntry(cursor, linLayout);
                             int count = cursor.getColumnCount();
                             while(count-- > 0){
@@ -155,7 +154,7 @@ public class ContactView extends AppCompatActivity {
                                 //if(cursor.getString(count) != null) addDataEntry(cursor.getString(cursor.getColumnIndex("mimetype")),cursor.getColumnName(count), cursor.getString(count), linLayout);
                                 // add to debug text
                                 try {
-                                    if(cursor.getColumnName(count).equals("mimetype")) //Log.d("malte",cursor.getString(count));
+                                    if(cursor.getColumnName(count).equals("mimetype")) Log.d("malte",cursor.getString(count));
                                     if(cursor.getString(count) != null)
                                         builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                                 }catch (Exception e) { Log.d("malte",e.getMessage());}
