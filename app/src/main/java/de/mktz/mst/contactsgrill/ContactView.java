@@ -81,7 +81,7 @@ public class ContactView extends AppCompatActivity {
         //DEBUG
 
         ContactReader cr = new ContactReader(getApplicationContext());
-        int count = 10;
+        int count = 0;
         long a = (long)(new Random().nextInt(620));
         while(count-- != 0 && a != 0) {
             cr.getContactByID(a--).DEBUG_Log();
@@ -126,6 +126,12 @@ public class ContactView extends AppCompatActivity {
                                 builder.append(cursor.getColumnName(count)).append(": ").append(cursor.getString(count)).append("\n");
                             }
                             builder.append("\n\n\n\n");
+
+                            String deviceID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                            ContactReader cr = new ContactReader(getApplicationContext());
+                            cr.getContactByID(Long.parseLong(deviceID)).DEBUG_Log();
+
+
                             String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                             String lookup = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                             String lookupURI = ContactsContract.Contacts.getLookupUri((long) cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID)), lookup).toString();

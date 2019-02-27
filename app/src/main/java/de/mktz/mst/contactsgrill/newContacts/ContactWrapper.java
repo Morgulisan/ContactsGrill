@@ -13,7 +13,7 @@ public class ContactWrapper {
     private String photoUri;
     private String photoThumbUri;
     private String birthday;
-
+    private String nextContactTime;
     private boolean isTracked;
 
 
@@ -46,6 +46,8 @@ public class ContactWrapper {
         Log.d("malte","===================================");
         Log.d("malte","Contact ID   : " + deviceContactId);
         Log.d("malte","Contact Name : " + displayName);
+        if(birthday != null)
+        Log.d("malte","Birthday date: " + birthday);
         for (String nr: phoneNumbers) {
             Log.d("malte","Number       : " + nr);
         }
