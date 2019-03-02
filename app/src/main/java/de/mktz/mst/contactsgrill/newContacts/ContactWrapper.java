@@ -39,6 +39,17 @@ public class ContactWrapper {
         this.displayName = name;
         this.phoneNumbers = new ArrayList<>();
     }
+    public ContactWrapper(long id, String name, String birthday, String photo, String thumb, String[] phones){
+        this.deviceContactId = id;
+        this.displayName = name;
+        this.birthday = birthday;
+        this.photoUri = photo;
+        this.photoThumbUri = thumb;
+        for(String nr : phones)
+        this.phoneNumbers.add(nr);
+    }
+
+
     public void addPhoneNumber(String number){
         if(! phoneNumbers.contains(number)) this.phoneNumbers.add(number);
     }

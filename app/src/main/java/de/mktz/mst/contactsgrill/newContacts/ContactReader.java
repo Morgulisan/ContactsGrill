@@ -51,19 +51,37 @@ public class ContactReader {
     }
     public ArrayList<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){ //TODO remove DB_Handler
         //TODO
-        Log.e("malte","getListOf* is not implemented");
+        String[] projection = {
+                ContactsContract.Contacts._ID
+                ,ContactsContract.Contacts.DISPLAY_NAME
+                ,Phone.NUMBER
+                ,Phone.TYPE
+                ,Event.START_DATE
+                ,Event.TYPE
+                ,Event.LABEL
+                ,ContactsContract.Contacts.PHOTO_URI
+                ,ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
+        };
+        String selection = Event.TYPE + " = " + Event.TYPE_BIRTHDAY;
         ArrayList<ContactWrapper> r = new ArrayList<>();
-        r.add(getContactByID(11L));
-        r.add(getContactByID(12L));
-        r.add(getContactByID(13L));
-        r.add(getContactByID(14L));
-        r.add(getContactByID(15L));
-        r.add(getContactByID(16L));
-        r.add(getContactByID(17L));
-        r.add(getContactByID(18L));
-        r.add(getContactByID(19L));
+        ContentResolver resolver = context.getContentResolver();
+        Cursor contactsCursor = resolver.query(ContactsContract.Contacts.CONTENT_URI, projection,selection,null,null);
+
+        if (contactsCursor == null) return  r;
+
+        int indexId = contactsCursor.getColumnIndex(ContactsContract.Contacts._ID);
+        int indexName = contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+        int indexNumber = contactsCursor.getColumnIndex(Phone.NUMBER);
+        int indexBirthday = contactsCursor.getColumnIndex(Event.START_DATE);
+        int indexPhotoThumb = contactsCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI);
+        int indexPhoto = contactsCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI);
+
+
+        if(contactsCursor.moveToFirst()) do {
+            r.add(new ContactWrapper(contactsCursor.getLong(indexId),contactsCursor.getString(indexName),contactsCursor.getString(indexBirthday),contactsCursor.getString(indexPhoto),contactsCursor.getString(indexPhotoThumb),new String[] {contactsCursor.getString(indexNumber)}));
+        }while(contactsCursor.moveToNext());
+        contactsCursor.close();
         return r;
-        //TODO Mockup
     }
 
     public ArrayList<ContactWrapper> getListOfTrackedContacts(DB_Handler.SortParameter sortParameter){
