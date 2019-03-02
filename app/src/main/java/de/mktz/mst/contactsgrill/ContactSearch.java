@@ -88,7 +88,7 @@ public class ContactSearch extends AppCompatActivity {
             case 1:
                 Collections.sort(list, new Comparator<ContactWrapper>() {
                     public int compare(ContactWrapper o1, ContactWrapper o2) {
-                        return (int) ((o1.getId() - o2.getId()));
+                        return (int) ((o1.getDeviceContactId() - o2.getDeviceContactId()));
                     }
                 });
                 break;

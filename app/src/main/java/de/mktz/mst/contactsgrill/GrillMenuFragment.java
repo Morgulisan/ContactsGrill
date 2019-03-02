@@ -147,7 +147,7 @@ public class GrillMenuFragment extends Fragment {
             case 1:
                 Collections.sort(list, new Comparator<ContactWrapper>() {
                     public int compare(ContactWrapper o1, ContactWrapper o2) {
-                        return (int) ((o1.getId() - o2.getId()));
+                        return (int) ((o1.getDeviceContactId() - o2.getDeviceContactId()));
                     }
                 });
                 break;
@@ -169,7 +169,7 @@ public class GrillMenuFragment extends Fragment {
             default:
                 Collections.sort(list, new Comparator<ContactWrapper>() {
                     public int compare(ContactWrapper o1, ContactWrapper o2) {
-                        return (int) ((o1.getId() - o2.getId()));
+                        return (int) ((o1.getDeviceContactId() - o2.getDeviceContactId()));
                     }
                 });
         }
