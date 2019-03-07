@@ -8,25 +8,39 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.Manifest;
 import android.database.Cursor;
-import android.os.Debug;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.*;
-import android.support.v4.app.ActivityCompat;
+import android.support.annotation.Nullable;
+import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Random;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler;
 
+import static android.support.v4.app.ActivityCompat.finishAffinity;
 import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static android.support.v4.content.ContextCompat.startActivity;
 
 
 public class ContactReader {
 
+    private static final String[] projectionPhone = {
+            Phone.CONTACT_ID
+            ,Phone.NUMBER
+            ,Phone.TYPE
+            ,Phone.LABEL
+    };
+    private static final String[] projectionEvent = {
+            Event.CONTACT_ID
+            ,Event.START_DATE
+            ,Event.TYPE
+            ,Event.LABEL
+    };
+
     public Context context;
+    private static LongSparseArray<ContactWrapper> previouslyLoadedContacts = new LongSparseArray<>();
 
     public ContactReader(Context c){
         this.context = c;
@@ -34,35 +48,39 @@ public class ContactReader {
 
     public ContactWrapper getContactByID(Long id) {
         if(!hasPermission()) return null; //TODO throw exception?
-
+        ContactWrapper cw = null;
+        if(previouslyLoadedContacts.get(id) != null){
+            cw = previouslyLoadedContacts.get(id);
+            if(!cw.isFullyInitialized()){ //TODO Optimize for different init progress
+                loadContactDates(cw);
+                loadContactPhotos(cw);
+                loadContactNumbers(cw);
+            }
+            return cw;
+        }
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, "_ID = '" + id + "'", null, null, null);
 
         if(cursor == null) return null;
-        ContactWrapper cw = null;
         if (cursor.moveToFirst()) {
             cw = new ContactWrapper(id, cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
-            loadContactNumbers(cw);
-            loadContactPhotos(cw);
             loadContactDates(cw);
+            loadContactPhotos(cw);
+            loadContactNumbers(cw);
         }
         cursor.close();
+        previouslyLoadedContacts.put(id,cw);
         return cw;
     }
-    public ArrayList<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){ //TODO remove DB_Handler
-        //TODO
+    public ArrayList<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){
+        //TODO WHERE only not in previouslyLoadedContacts, Remove DB_Handler
         String[] projection = {
                 ContactsContract.Contacts._ID
                 ,ContactsContract.Contacts.DISPLAY_NAME
-                ,Phone.NUMBER
-                ,Phone.TYPE
-                ,Event.START_DATE
-                ,Event.TYPE
-                ,Event.LABEL
                 ,ContactsContract.Contacts.PHOTO_URI
                 ,ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
         };
-        String selection = Event.TYPE + " = " + Event.TYPE_BIRTHDAY;
+        String selection = "";//Event.TYPE + " = " + Event.TYPE_BIRTHDAY;
         ArrayList<ContactWrapper> r = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
         Cursor contactsCursor = resolver.query(ContactsContract.Contacts.CONTENT_URI, projection,selection,null,null);
@@ -71,14 +89,19 @@ public class ContactReader {
 
         int indexId = contactsCursor.getColumnIndex(ContactsContract.Contacts._ID);
         int indexName = contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-        int indexNumber = contactsCursor.getColumnIndex(Phone.NUMBER);
-        int indexBirthday = contactsCursor.getColumnIndex(Event.START_DATE);
         int indexPhotoThumb = contactsCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI);
         int indexPhoto = contactsCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI);
 
 
         if(contactsCursor.moveToFirst()) do {
-            r.add(new ContactWrapper(contactsCursor.getLong(indexId),contactsCursor.getString(indexName),contactsCursor.getString(indexBirthday),contactsCursor.getString(indexPhoto),contactsCursor.getString(indexPhotoThumb),new String[] {contactsCursor.getString(indexNumber)}));
+            if(previouslyLoadedContacts.get(contactsCursor.getLong(indexId)) != null){
+                r.add(previouslyLoadedContacts.get(contactsCursor.getLong(indexId)));
+            }
+            else {
+                ContactWrapper cw = new ContactWrapper(contactsCursor.getLong(indexId), contactsCursor.getString(indexName)).setPhotoUris(contactsCursor.getString(indexPhoto), contactsCursor.getString(indexPhotoThumb));
+                r.add(cw);
+                previouslyLoadedContacts.put(contactsCursor.getLong(indexId),cw);
+            }
         }while(contactsCursor.moveToNext());
         contactsCursor.close();
         return r;
@@ -100,6 +123,39 @@ public class ContactReader {
         return getListOfAllContacts(null);
     }
 
+    public void fillContactData(@Nullable String ids){ //TODO refactor ids to accept lists ?
+        StringBuilder builder = new StringBuilder().append('(');
+        if(ids == null){
+            for(int i = 0; i<previouslyLoadedContacts.size();i++) { //TODO off by one?
+                builder.append(previouslyLoadedContacts.keyAt(i)).append(',');
+            }
+        }else builder.append(ids);
+        builder.delete(builder.length()-1,builder.length()).append(')');
+        String selection = Phone._ID + " IN " + builder.toString();
+        ContentResolver resolver = context.getContentResolver();
+        Cursor cursor = resolver.query(Phone.CONTENT_URI, projectionPhone,selection,null,null);
+        if(cursor != null) {
+            int indexNumber = cursor.getColumnIndex(Phone.NUMBER);
+            int indexType = cursor.getColumnIndex(Phone.TYPE);
+            int indexContact = cursor.getColumnIndex(Phone.CONTACT_ID);
+            if (cursor.moveToFirst()) do {
+                handleCursorPhone(cursor, indexContact, indexType, indexNumber);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        selection = ContactsContract.Data.MIMETYPE + " = '" + Event.CONTENT_ITEM_TYPE;
+        cursor = resolver.query(ContactsContract.Data.CONTENT_URI, projectionPhone,selection,null,null);
+        if(cursor != null) {
+            int indexContact = cursor.getColumnIndex(Event.CONTACT_ID);
+            int indexDate = cursor.getColumnIndex(Event.START_DATE);
+            int indexType = cursor.getColumnIndex(Event.TYPE);
+            if (cursor.moveToFirst()) do {
+                handleCursorEvents(cursor, indexContact, indexType, indexDate);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+    }
 
     private boolean hasPermission(){
 
@@ -119,12 +175,13 @@ public class ContactReader {
     private void loadContactNumbers(ContactWrapper cw){
         //TODO Projection
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor phonesCursor = contentResolver.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + cw.getDeviceContactId(), null, null);
+        Cursor phonesCursor = contentResolver.query(Phone.CONTENT_URI, projectionPhone, Phone.CONTACT_ID + " = " + cw.getDeviceContactId(), null, null);
         if(phonesCursor == null) return;
+        int indexNumber = phonesCursor.getColumnIndex(Phone.NUMBER);
+        int indexType = phonesCursor.getColumnIndex(Phone.TYPE);
+        int indexContact = phonesCursor.getColumnIndex(Phone.CONTACT_ID);
         while (phonesCursor.moveToNext()) {
-            String number = phonesCursor.getString(phonesCursor.getColumnIndex(Phone.NUMBER));
-            //int type = phonesCursor.getInt(phonesCursor.getColumnIndex(Phone.TYPE));
-            cw.addPhoneNumber(number);
+            handleCursorPhone(phonesCursor,indexContact,indexType,indexNumber);
         }
         phonesCursor.close();
     }
@@ -142,33 +199,15 @@ public class ContactReader {
     }
     private void loadContactDates(ContactWrapper cw){
         ContentResolver contentResolver = context.getContentResolver();
-        String[] projection = new String[]{
-                ContactsContract.Contacts.Data.RAW_CONTACT_ID,
-                Event.START_DATE,
-                Event.TYPE,
-                Event.LABEL
-        };
         String selection = ContactsContract.Data.MIMETYPE + " = '" + Event.CONTENT_ITEM_TYPE + "' AND " + ContactsContract.Contacts.Data.RAW_CONTACT_ID + " = " + cw.getDeviceContactId();
-        Cursor datesCursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projection, selection,null,null);
+        Cursor datesCursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projectionEvent, selection,null,null);
         if(datesCursor == null) return;
+        int indexStart = datesCursor.getColumnIndex(Event.START_DATE);
+        int indexType = datesCursor.getColumnIndex(Event.TYPE);
+        int indexContact = datesCursor.getColumnIndex(Event.CONTACT_ID);
         if(datesCursor.getColumnCount() > 0 && datesCursor.moveToFirst()){
             do {
-                int dateType = datesCursor.getInt(datesCursor.getColumnIndex(Event.TYPE));
-                String dateDate = datesCursor.getString(datesCursor.getColumnIndex(Event.START_DATE));
-
-                if (dateType == Event.TYPE_BIRTHDAY) {
-                    cw.setBirthday(dateDate);
-                }
-                if (dateType == Event.TYPE_ANNIVERSARY) {
-                    //TODO set event
-                }
-                if (dateType == Event.TYPE_CUSTOM){
-                    String label = datesCursor.getString(datesCursor.getColumnIndex(Event.LABEL));
-                    Log.d("malte", "Custom Event on " + dateDate + " labeled :" + label );
-                    if (label.equals("Test Account Label")) DEBUG_edit("lol@example.com", "Aaron Name was updated" + new Random().nextInt(999), "01730000"+ new Random().nextInt(999), String.valueOf(cw.getDeviceContactId()));
-                }
-                //cw.DEBUG_Log();
-                //Log.d("malte","New Date of Type " + dateType + " on the " + dateDate + " on contact ID " + dates.getString(dates.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID)));
+                handleCursorEvents(datesCursor,indexContact,indexType,indexStart);
             } while (datesCursor.moveToNext());
         }
         datesCursor.close();
@@ -181,8 +220,7 @@ public class ContactReader {
         startActivity(context,intent,null);
         return false;
     }
-
-    private void DEBUG_edit(String email, String name, String number,String ContactId){
+    private void DEBUG_edit(String email, String name, String number, String ContactId){
         String wherePhone = ContactsContract.Data.CONTACT_ID + " = ? AND " +  ContactsContract.Data.MIMETYPE + " = ?";
         String whereName = ContactsContract.Data.RAW_CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
 
@@ -222,5 +260,25 @@ public class ContactReader {
             }
         }
 
+    }
+
+    private void handleCursorPhone(Cursor cursor, int indexContactId, int indexNumber, int indexTyp){
+        previouslyLoadedContacts.get(cursor.getLong(indexContactId)).addPhoneNumber(cursor.getString(indexNumber));
+    }
+    private void handleCursorEvents(Cursor cursor, int indexContactId, int indexStartDate, int indexType){
+        int dateType = cursor.getInt(indexType);
+
+        if (dateType == Event.TYPE_BIRTHDAY) {
+            previouslyLoadedContacts.get(cursor.getLong(indexContactId)).setBirthday(cursor.getString(indexStartDate));
+        }
+        if (dateType == Event.TYPE_ANNIVERSARY) {
+            Log.d("malte","Anniversary Event on " + cursor.getString(indexStartDate));
+            //TODO set event
+        }
+        if (dateType == Event.TYPE_CUSTOM){
+            String label = cursor.getString(cursor.getColumnIndex(Event.LABEL));
+            Log.d("malte", "Custom Event on " + cursor.getString(indexStartDate) + " labeled :" + label );
+            //TODO handle custom Event
+        }
     }
 }

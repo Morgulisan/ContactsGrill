@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
+import de.mktz.mst.contactsgrill.newContacts.ContactReader;
 import de.mktz.mst.contactsgrill.newContacts.ContactWrapper;
 import de.mktz.mst.contactsgrill.viewModel.GrillMenuViewModel;
 
@@ -100,6 +100,7 @@ public class GrillMenuFragment extends Fragment {
                 dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(DB_Handler.SortParameter.SORT_BIRTHDAY);
                 break;
             case "4":
+                new ContactReader(getContext()).fillContactData();
                 dataModels = viewModel.getDatabaseHandler().getListOfIncompleteContacts();
                 vt = CustomAdapter.ViewType.VIEW_PROGRESS;
                 break;

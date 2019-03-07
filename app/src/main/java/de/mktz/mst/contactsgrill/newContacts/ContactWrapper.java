@@ -1,8 +1,7 @@
 package de.mktz.mst.contactsgrill.newContacts;
 
+import android.app.Activity;
 import android.util.Log;
-
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,6 +13,11 @@ import java.util.regex.Pattern;
 import de.mktz.mst.contactsgrill.R;
 
 public class ContactWrapper {
+
+    private boolean photoInits;
+    private boolean datesInits;
+    private boolean numbersInits;
+
 
     private float completeness = -1;
     private Map<String,Integer> completeTasks;
@@ -38,34 +42,47 @@ public class ContactWrapper {
         this.deviceContactId = id;
         this.displayName = name;
         this.phoneNumbers = new ArrayList<>();
+        photoInits = false; //TODO alternatives. Contacts with no birthday will allways return false? 
+        datesInits = false;
+        numbersInits = false;
     }
-    public ContactWrapper(long id, String name, String birthday, String photo, String thumb, String[] phones){
+    public ContactWrapper(long id, String name,String photo, String thumb, String[] phones){
         this.deviceContactId = id;
         this.displayName = name;
-        this.birthday = birthday;
         this.photoUri = photo;
         this.photoThumbUri = thumb;
         for(String nr : phones)
         this.phoneNumbers.add(nr);
+        photoInits = true;
+        datesInits = false;
+        numbersInits = true;
     }
 
+    public boolean isFullyInitialized(){
+        return photoInits && datesInits && numbersInits;
+    }
 
     public void addPhoneNumber(String number){
         if(! phoneNumbers.contains(number)) this.phoneNumbers.add(number);
+        numbersInits = true;
     }
-    public void setPhotoUris(String photo, String thumb){
+    public ContactWrapper setPhotoUris(String photo, String thumb){
         this.photoUri = photo;
         this.photoThumbUri = thumb;
+        return this;
     }
-    public void setBirthday(String date){
+    public ContactWrapper setBirthday(String date){
         this.birthday = date;
+        return this;
     }
-    public void setTracked(boolean track){
+    public ContactWrapper setTracked(boolean track){
         this.isTracked = track;
         Log.e("malte","SetTrack() does currently not work");
+        return this;
     }
-    public void setLastContactTime(long lastContactTime){
+    public ContactWrapper setLastContactTime(long lastContactTime){
         Log.e("malte","setLastContactTime() does currently not work, set time to " + lastContactTime);
+        return this;
     }
 
     public long getDeviceContactId(){
@@ -112,21 +129,20 @@ public class ContactWrapper {
     }
 
     public float getCompleteness(){
-        if(completeness <= 0) {
-            if(completeTasks == null) completeTasks = new HashMap<>();
-            else completeTasks.clear();
-            float tasks = 4f;
-            float completes = 0f;
-            completes += completenessName();
-            completes += completenessBirthday();
-            completes += completenessPhoto();
-            completes += completenessPhoneNumbers();
-            completeness = completes / tasks;
-        }
+        if(completeTasks == null) completeTasks = new HashMap<>();
+        else completeTasks.clear();
+        float tasks = 4f;
+        float completes = 0f;
+        completes += completenessName();
+        completes += completenessBirthday();
+        completes += completenessPhoto();
+        completes += completenessPhoneNumbers();
+        completeness = completes / tasks;
         return completeness;
     }
 
     private float completenessBirthday(){
+        if (!datesInits);
         float completeness = 0f;
         if(getBirthday() != null) {
             if(getBirthday().length() >= 7 ) completeness += 0.5f; else addCompleteTask(COMPLETE_BIRTH_DAY, R.string.complete_birthday_day);//contains day and Month
@@ -136,11 +152,13 @@ public class ContactWrapper {
         return completeness;
     }
     private float completenessPhoto(){
+        if (!photoInits) ;
         if(getPhotoUri() != null) return  1f;
         addCompleteTask(COMPLETE_PHOTO,R.string.complete_photo);
         return 0;
     }
     private float completenessPhoneNumbers(){
+        if (!numbersInits) ;
         float completeness = 0f;
         if(phoneNumbers == null){
             throw new Error("Missing Phone Numbers #98021401");

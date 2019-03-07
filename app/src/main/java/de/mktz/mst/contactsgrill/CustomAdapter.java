@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import de.mktz.mst.contactsgrill.database.DB_Contact;
 import de.mktz.mst.contactsgrill.database.DB_Handler;
 import de.mktz.mst.contactsgrill.newContacts.ContactWrapper;
 
@@ -60,7 +59,6 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
         //this.dataSet = data;
         activityContext=context;
         viewType = vt;
-
     }
 
 
