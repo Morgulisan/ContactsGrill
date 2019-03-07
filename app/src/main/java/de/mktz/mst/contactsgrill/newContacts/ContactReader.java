@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler;
-
-import static android.support.v4.app.ActivityCompat.finishAffinity;
 import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static android.support.v4.content.ContextCompat.startActivity;
 
@@ -126,15 +124,19 @@ public class ContactReader {
     public void fillContactData(){
         fillContactData(null);
     }
-    public void fillContactData(@Nullable String ids){ //TODO refactor ids to accept lists ?
-        StringBuilder builder = new StringBuilder().append('(');
-        if(ids == null){
+    public void fillContactData(@Nullable String selection){ //TODO refactor ids to accept lists ?
+        if(selection == null){
+            StringBuilder builder = new StringBuilder().append('(');
             for(int i = 0; i<previouslyLoadedContacts.size();i++) { //TODO off by one?
-                builder.append(previouslyLoadedContacts.keyAt(i)).append(',');
+                //TODO statt diesem Umweg direkt uninizialisierte IDs speichern?
+                if(!previouslyLoadedContacts.valueAt(i).isFullyInitialized()) {
+                    builder.append(previouslyLoadedContacts.keyAt(i)).append(',');
+                    previouslyLoadedContacts.valueAt(i).setFlagAllDataInitialized();
+                }
             }
-        }else builder.append(ids);
-        builder.delete(builder.length()-1,builder.length()).append(')');
-        String selection = Phone._ID + " IN " + builder.toString();
+            builder.delete(builder.length()-1,builder.length()).append(')');
+            selection = Phone.CONTACT_ID + " IN " + builder.toString();
+        }
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(Phone.CONTENT_URI, projectionPhone,selection,null,null);
         if(cursor != null) {
@@ -146,14 +148,14 @@ public class ContactReader {
             } while (cursor.moveToNext());
             cursor.close();
         }
-        selection = ContactsContract.Data.MIMETYPE + " = '" + Event.CONTENT_ITEM_TYPE;
+        selection = ContactsContract.Data.MIMETYPE + " = '" + Event.CONTENT_ITEM_TYPE + "'";
         cursor = resolver.query(ContactsContract.Data.CONTENT_URI, projectionPhone,selection,null,null);
         if(cursor != null) {
             int indexContact = cursor.getColumnIndex(Event.CONTACT_ID);
             int indexDate = cursor.getColumnIndex(Event.START_DATE);
             int indexType = cursor.getColumnIndex(Event.TYPE);
             if (cursor.moveToFirst()) do {
-                handleCursorEvents(cursor, indexContact,indexDate ,indexType);
+                handleCursorEvents(cursor, indexContact, indexDate, indexType);
             } while (cursor.moveToNext());
             cursor.close();
         }
