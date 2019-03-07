@@ -123,6 +123,9 @@ public class ContactReader {
         return getListOfAllContacts(null);
     }
 
+    public void fillContactData(){
+        fillContactData(null);
+    }
     public void fillContactData(@Nullable String ids){ //TODO refactor ids to accept lists ?
         StringBuilder builder = new StringBuilder().append('(');
         if(ids == null){
@@ -139,7 +142,7 @@ public class ContactReader {
             int indexType = cursor.getColumnIndex(Phone.TYPE);
             int indexContact = cursor.getColumnIndex(Phone.CONTACT_ID);
             if (cursor.moveToFirst()) do {
-                handleCursorPhone(cursor, indexContact, indexType, indexNumber);
+                handleCursorPhone(cursor, indexContact, indexNumber, indexType);
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -150,7 +153,7 @@ public class ContactReader {
             int indexDate = cursor.getColumnIndex(Event.START_DATE);
             int indexType = cursor.getColumnIndex(Event.TYPE);
             if (cursor.moveToFirst()) do {
-                handleCursorEvents(cursor, indexContact, indexType, indexDate);
+                handleCursorEvents(cursor, indexContact,indexDate ,indexType);
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -181,7 +184,7 @@ public class ContactReader {
         int indexType = phonesCursor.getColumnIndex(Phone.TYPE);
         int indexContact = phonesCursor.getColumnIndex(Phone.CONTACT_ID);
         while (phonesCursor.moveToNext()) {
-            handleCursorPhone(phonesCursor,indexContact,indexType,indexNumber);
+            handleCursorPhone(phonesCursor,indexContact,indexNumber,indexType);
         }
         phonesCursor.close();
     }

@@ -42,7 +42,7 @@ public class ContactWrapper {
         this.deviceContactId = id;
         this.displayName = name;
         this.phoneNumbers = new ArrayList<>();
-        photoInits = false; //TODO alternatives. Contacts with no birthday will allways return false? 
+        photoInits = false; //TODO alternatives. Contacts with no birthday will allways return false?
         datesInits = false;
         numbersInits = false;
     }
@@ -163,26 +163,25 @@ public class ContactWrapper {
         if(phoneNumbers == null){
             throw new Error("Missing Phone Numbers #98021401");
         }
-        else {
-            float numberPercent = 1f;
-            for (String number : phoneNumbers){
-                float numberP = 1f;
-                if (!(number.substring(0,1).equals("+") || number.substring(0,2).equals("00"))){
-                    numberP -= 0.2f;
-                    addCompleteTask("#: " + number, R.string.complete_number_pre);
-                }
-                if(number.length() <= 7){
-                    numberP -= 0.8;
-                    addCompleteTask("#: " + number, R.string.complete_number_length);
-                }
-                numberPercent *= numberP;
+        float numberPercent = 1f;
+        for (String number : phoneNumbers){
+            float numberP = 1f;
+            if(number.length() <= 6){
+                numberP -= 1f;
+                addCompleteTask("#: " + number, R.string.complete_number_length);
             }
-            if(phoneNumbers.isEmpty()) {
-                numberPercent = 0f;
-                addCompleteTask("NoNumber", R.string.complete_number_exists);
+            else if (!(number.substring(0,1).equals("+") || number.substring(0,2).equals("00"))){
+                numberP -= 0.25f;
+                addCompleteTask("#: " + number, R.string.complete_number_pre);
             }
-            completeness += numberPercent;
+            numberPercent *= numberP;
         }
+        if(phoneNumbers.isEmpty()) {
+            numberPercent = 0f;
+            addCompleteTask("NoNumber", R.string.complete_number_exists);
+        }
+        completeness += numberPercent;
+
         return completeness;
     }
     private float completenessName(){
