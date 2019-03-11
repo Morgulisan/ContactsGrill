@@ -49,10 +49,11 @@ public class ContactReader {
         ContactWrapper cw = null;
         if(previouslyLoadedContacts.get(id) != null){
             cw = previouslyLoadedContacts.get(id);
-            if(!cw.isFullyInitialized()){ //TODO Optimize for different init progress
+            if(!cw.isFullyInitialized()){
                 loadContactDates(cw);
                 loadContactPhotos(cw);
                 loadContactNumbers(cw);
+                cw.setFlagAllDataInitialized();
             }
             return cw;
         }
@@ -65,6 +66,7 @@ public class ContactReader {
             loadContactDates(cw);
             loadContactPhotos(cw);
             loadContactNumbers(cw);
+            cw.setFlagAllDataInitialized();
         }
         cursor.close();
         previouslyLoadedContacts.put(id,cw);
@@ -126,7 +128,7 @@ public class ContactReader {
     }
     public void fillContactData(@Nullable String selection){ //TODO refactor ids to accept lists ?
         if(selection == null){
-            StringBuilder builder = new StringBuilder().append('(');
+            final StringBuilder builder = new StringBuilder().append('('); //TODO use TextUtils.join( instead
             for(int i = 0; i<previouslyLoadedContacts.size();i++) { //TODO off by one?
                 //TODO statt diesem Umweg direkt uninizialisierte IDs speichern?
                 if(!previouslyLoadedContacts.valueAt(i).isFullyInitialized()) {
@@ -268,7 +270,7 @@ public class ContactReader {
     }
 
     private void handleCursorPhone(Cursor cursor, int indexContactId, int indexNumber, int indexTyp){
-        previouslyLoadedContacts.get(cursor.getLong(indexContactId)).addPhoneNumber(cursor.getString(indexNumber));
+        previouslyLoadedContacts.get(cursor.getLong(indexContactId)).addPhoneNumber(cursor.getString(indexNumber).replaceAll("\\s+",""));
     }
     private void handleCursorEvents(Cursor cursor, int indexContactId, int indexStartDate, int indexType){
         int dateType = cursor.getInt(indexType);

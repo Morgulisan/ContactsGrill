@@ -198,7 +198,7 @@ public class ContactWrapper {
         completeTasks.put(TaskName,TaskDescription);
     }
     public Map<String,Integer> getCompletingTasks(){
-        if(completeTasks == null) getCompleteness();
+        /*if(completeTasks == null)*/ getCompleteness();
         return completeTasks;
     }
 

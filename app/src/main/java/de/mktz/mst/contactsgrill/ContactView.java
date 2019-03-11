@@ -68,7 +68,7 @@ public class ContactView extends AppCompatActivity {
             ((ImageView) findViewById(R.id.completenessIcon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_24dp,null));
             //TODO Color
         }
-        if(!contact.getPhoneNumbers().isEmpty() )((TextView) findViewById(R.id.infoFeld2)).setText(String.format("%s",contact.getPhoneNumbers().get(0)));
+        if(!contact.getPhoneNumbers().isEmpty())((TextView) findViewById(R.id.infoFeld2)).setText(String.format("%s",contact.getPhoneNumbers().get(0)));
         ((Switch)findViewById(R.id.followed)).setChecked(contact.getTracked());
         findViewById(R.id.followed).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,16 +77,6 @@ public class ContactView extends AppCompatActivity {
                 reader.updateContactTrack(contact.getId(),((Switch) findViewById(R.id.followed)).isChecked());
             }
         });
-        //DEBUG
-
-        ContactReader cr = new ContactReader(getApplicationContext());
-        int count = 0;
-        long a = (long)(new Random().nextInt(620));
-        while(count-- != 0 && a != 0) {
-            cr.getContactByID(a--).DEBUG_Log();
-        }
-
-        //DEBUG END
     }
 
     void getDebugData(long id){
@@ -101,7 +91,7 @@ public class ContactView extends AppCompatActivity {
         }
         else {
             //Has permissions
-            try {
+           // try {
                 final StringBuilder builder = new StringBuilder();
                 ContentResolver contentResolver = getContentResolver();
                 Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
@@ -166,9 +156,9 @@ public class ContactView extends AppCompatActivity {
                 }
 
                 ((TextView) findViewById(R.id.debugText)).setText(builder.toString());
-            } catch (Exception e) {
-                ((TextView) findViewById(R.id.debugText)).setText(e.getMessage());
-            }
+           // } catch (Exception e) {
+           //     ((TextView) findViewById(R.id.debugText)).setText(e.getMessage());
+          //  }
         }
         ((TextView) findViewById(R.id.debugText)).append(contact.getPhoneNumbers().toString());
     }
@@ -213,6 +203,20 @@ public class ContactView extends AppCompatActivity {
                 icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_mail_outline_black_24dp,null));
                 info = "mail"; //TODO Type
                 value = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                break;
+            case "vnd.android.cursor.item/group_membership": //TODO Constants
+                icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_gallery,null));
+                info = "group"; //TODO Type
+                Cursor groupName = getContentResolver().query(
+                        ContactsContract.Groups.CONTENT_URI
+                        ,new String[]{ContactsContract.Groups.TITLE}
+                        ,ContactsContract.Groups._ID + " = " + cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))
+                        ,null
+                        ,null);
+                groupName.moveToFirst();
+                Log.e("malte","lol: " + groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE)));
+                value = groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE));
+                groupName.close();
                 break;
             default:
                 //Log.d("malte",mime);
