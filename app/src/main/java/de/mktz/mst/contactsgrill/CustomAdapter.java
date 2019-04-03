@@ -109,14 +109,14 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
         if(dataModel.getPhotoUri() != null) {viewHolder.contactImageView.setImageURI(Uri.parse(dataModel.getPhotoUri()));}
         else viewHolder.contactImageView.setImageDrawable(null);
         viewHolder.contactNameTextView.setText(dataModel.getDisplayName());
-        viewHolder.contactInfoTextView.setText(String.format(Locale.GERMAN,"%d",dataModel.getId()));
+        viewHolder.contactInfoTextView.setText(String.format(Locale.GERMAN,"%d",dataModel.getDeviceContactId()));
         viewHolder.contactFollowView.setChecked(dataModel.getTracked());
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(activityContext,ContactView.class);
                 Bundle b = new Bundle();
-                b.putLong("contactId",dataModel.getId());
+                b.putLong("contactId",dataModel.getDeviceContactId());
                 intent.putExtras(b);
                 activityContext.startActivity(intent);
             }
@@ -126,7 +126,7 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
             public void onClick(View view) {
                 DB_Handler db_handler = new DB_Handler(activityContext);
                 dataModel.setTracked(!dataModel.getTracked());
-                db_handler.updateContactTrack(dataModel.getId(),dataModel.getTracked());
+                db_handler.updateContactTrack(dataModel.getDeviceContactId(),dataModel.getTracked());
             }
         });
 
@@ -171,7 +171,7 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
             public void onClick(View view) {
                 dataModel.setLastContactTime(System.currentTimeMillis());
                 DB_Handler handler = new DB_Handler(getContext());
-                handler.updateContactLastCon(dataModel.getId(),dataModel.getLastContactTime());
+                handler.updateContactLastCon(dataModel.getDeviceContactId(),dataModel.getLastContactTime());
             }
         });
         // Return the completed view to render on screen
@@ -206,7 +206,7 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
             public void onClick(View view) {
                 Intent intent = new Intent(activityContext,ContactView.class);
                 Bundle b = new Bundle();
-                b.putLong("contactId",dataModel.getId());
+                b.putLong("contactId",dataModel.getDeviceContactId());
                 intent.putExtras(b);
                 activityContext.startActivity(intent);
             }

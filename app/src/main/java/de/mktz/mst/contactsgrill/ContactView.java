@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -74,7 +75,7 @@ public class ContactView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 contact.setTracked(((Switch) findViewById(R.id.followed)).isChecked());
-                reader.updateContactTrack(contact.getId(),((Switch) findViewById(R.id.followed)).isChecked());
+                reader.updateContactTrack(contact.getDeviceContactId(),((Switch) findViewById(R.id.followed)).isChecked());
             }
         });
     }
@@ -118,7 +119,7 @@ public class ContactView extends AppCompatActivity {
 
                             String deviceID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                             ContactReader cr = new ContactReader(getApplicationContext());
-                            cr.getContactByID(Long.parseLong(deviceID)).DEBUG_Log();
+                            //cr.getContactByID(Long.parseLong(deviceID)).DEBUG_Log();
 
 
                             String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -161,6 +162,28 @@ public class ContactView extends AppCompatActivity {
           //  }
         }
         ((TextView) findViewById(R.id.debugText)).append(contact.getPhoneNumbers().toString());
+
+
+        Cursor groupName = getContentResolver().query(
+                ContactsContract.Groups.CONTENT_URI
+                ,null
+                ,null
+                ,null
+                ,null);
+        groupName.moveToFirst();
+        do {
+            Log.d("malte", "============");
+            int count = groupName.getColumnCount();
+            try {
+                while (count-- > 0) {
+                    if(groupName.getColumnName(count).equals("title")){
+                        Log.e("malte", groupName.getColumnName(count) + ": " + groupName.getString(count));
+                    }else
+                    Log.d("malte", groupName.getColumnName(count) + ": " + groupName.getString(count));
+                }
+            } catch (Exception e){}
+        }while(groupName.moveToNext());
+        groupName.close();
     }
 
 
@@ -214,7 +237,7 @@ public class ContactView extends AppCompatActivity {
                         ,null
                         ,null);
                 groupName.moveToFirst();
-                Log.e("malte","lol: " + groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE)));
+                Log.d("malte","In Group: " + groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE)));
                 value = groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE));
                 groupName.close();
                 break;

@@ -37,11 +37,14 @@ public class ContactReader {
             ,Event.LABEL
     };
 
-    public Context context;
+    private Context context;
+    private GroupReader gr;
+
     private static LongSparseArray<ContactWrapper> previouslyLoadedContacts = new LongSparseArray<>();
 
     public ContactReader(Context c){
         this.context = c;
+        this.gr = new GroupReader(c);
     }
 
     public ContactWrapper getContactByID(Long id) {
