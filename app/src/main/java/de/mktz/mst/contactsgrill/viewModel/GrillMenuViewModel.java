@@ -27,7 +27,8 @@ public class GrillMenuViewModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                updateDatabase();
+                //TODO Uses Old DB_Contact, remove
+                //updateDatabase();
             }
         }).run();
     }

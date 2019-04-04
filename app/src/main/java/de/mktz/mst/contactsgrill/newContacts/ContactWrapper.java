@@ -2,6 +2,7 @@ package de.mktz.mst.contactsgrill.newContacts;
 
 import android.util.Log;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +16,6 @@ public class ContactWrapper {
 
     private boolean allDataInitialized;
 
-
     private float completeness = -1;
     private Map<String,Integer> completeTasks;
     private static final String COMPLETE_BIRTH_DAY = "BirthDay";
@@ -28,6 +28,7 @@ public class ContactWrapper {
     private long deviceContactId;
     private String displayName;
     private ArrayList<String> phoneNumbers;
+    private ArrayList<GroupWrapper> groupMembership;
     private String photoUri;
     private String photoThumbUri;
     private String birthday;
@@ -46,8 +47,7 @@ public class ContactWrapper {
         this.displayName = name;
         this.photoUri = photo;
         this.photoThumbUri = thumb;
-        for(String nr : phones)
-        this.phoneNumbers.add(nr);
+        this.phoneNumbers.addAll(Arrays.asList(phones));
         allDataInitialized = true;
     }
 
@@ -58,8 +58,9 @@ public class ContactWrapper {
         this.allDataInitialized = true;
     }
 
-    public void addPhoneNumber(String number){
+    public ContactWrapper addPhoneNumber(String number){
         if(! phoneNumbers.contains(number)) this.phoneNumbers.add(number);
+        return this;
     }
     public ContactWrapper setPhotoUris(String photo, String thumb){
         this.photoUri = photo;
@@ -79,6 +80,19 @@ public class ContactWrapper {
         Log.e("malte","setLastContactTime() does currently not work, set time to " + lastContactTime);
         return this;
     }
+    public ContactWrapper changeGroupMembership(GroupWrapper group, boolean state){
+        if(state){
+            if(groupMembership == null){
+                groupMembership = new ArrayList<>();
+            }
+            groupMembership.add(group);
+        }
+        else {
+            if(groupMembership != null) groupMembership.remove(group);
+        }
+        return this;
+    }
+
 
     public long getDeviceContactId(){
         return deviceContactId;

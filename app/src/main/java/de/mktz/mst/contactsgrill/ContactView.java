@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Random;
 import java.util.function.BiConsumer;
 
 import de.mktz.mst.contactsgrill.newContacts.ContactReader;
@@ -117,8 +115,8 @@ public class ContactView extends AppCompatActivity {
                             }
                             builder.append("\n\n\n\n");
 
-                            String deviceID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                            ContactReader cr = new ContactReader(getApplicationContext());
+                            //String deviceID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                            //ContactReader cr = new ContactReader(getApplicationContext());
                             //cr.getContactByID(Long.parseLong(deviceID)).DEBUG_Log();
 
 
@@ -162,28 +160,6 @@ public class ContactView extends AppCompatActivity {
           //  }
         }
         ((TextView) findViewById(R.id.debugText)).append(contact.getPhoneNumbers().toString());
-
-
-        Cursor groupName = getContentResolver().query(
-                ContactsContract.Groups.CONTENT_URI
-                ,null
-                ,null
-                ,null
-                ,null);
-        groupName.moveToFirst();
-        do {
-            Log.d("malte", "============");
-            int count = groupName.getColumnCount();
-            try {
-                while (count-- > 0) {
-                    if(groupName.getColumnName(count).equals("title")){
-                        Log.e("malte", groupName.getColumnName(count) + ": " + groupName.getString(count));
-                    }else
-                    Log.d("malte", groupName.getColumnName(count) + ": " + groupName.getString(count));
-                }
-            } catch (Exception e){}
-        }while(groupName.moveToNext());
-        groupName.close();
     }
 
 
@@ -236,6 +212,10 @@ public class ContactView extends AppCompatActivity {
                         ,ContactsContract.Groups._ID + " = " + cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))
                         ,null
                         ,null);
+                if(groupName == null){
+                    value = "Unnamed Group";
+                    break;
+                }
                 groupName.moveToFirst();
                 Log.d("malte","In Group: " + groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE)));
                 value = groupName.getString(groupName.getColumnIndex(ContactsContract.Groups.TITLE));

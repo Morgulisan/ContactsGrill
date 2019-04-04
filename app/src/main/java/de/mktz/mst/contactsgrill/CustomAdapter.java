@@ -161,7 +161,7 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
             public void onClick(View view) {
                 Intent intent = new Intent(activityContext,ContactView.class);
                 Bundle b = new Bundle();
-                b.putLong("contactId",dataModel.getId());
+                b.putLong("contactId",dataModel.getDeviceContactId());
                 intent.putExtras(b);
                 activityContext.startActivity(intent);
             }
