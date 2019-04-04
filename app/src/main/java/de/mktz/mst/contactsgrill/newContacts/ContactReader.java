@@ -15,6 +15,7 @@ import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -25,16 +26,21 @@ import static android.support.v4.content.ContextCompat.startActivity;
 public class ContactReader {
 
     private static final String[] projectionPhone = {
-            Phone.CONTACT_ID
-            ,Phone.NUMBER
-            ,Phone.TYPE
-            ,Phone.LABEL
+        Phone.CONTACT_ID
+        ,Phone.NUMBER
+        ,Phone.TYPE
+        ,Phone.LABEL
     };
     private static final String[] projectionEvent = {
-            Event.CONTACT_ID
-            ,Event.START_DATE
-            ,Event.TYPE
-            ,Event.LABEL
+        Event.CONTACT_ID
+        ,Event.START_DATE
+        ,Event.TYPE
+        ,Event.LABEL
+    };
+    private static final String[] projectionGroups = {
+        GroupMembership.CONTACT_ID
+        ,GroupMembership.GROUP_ROW_ID
+        ,GroupMembership.GROUP_SOURCE_ID
     };
 
     private Context context;
@@ -43,7 +49,7 @@ public class ContactReader {
     private static LongSparseArray<ContactWrapper> previouslyLoadedContacts = new LongSparseArray<>();
 
     public ContactReader(Context c){
-        this.context = c;
+        this.context = Objects.requireNonNull(c , "Null Context given to Contact reader");
         this.gr = new GroupReader(c);
     }
 
@@ -56,6 +62,7 @@ public class ContactReader {
                 loadContactDates(cw);
                 loadContactPhotos(cw);
                 loadContactNumbers(cw);
+                loadContactGroups(cw);
                 cw.setFlagAllDataInitialized();
             }
             return cw;
@@ -69,6 +76,7 @@ public class ContactReader {
             loadContactDates(cw);
             loadContactPhotos(cw);
             loadContactNumbers(cw);
+            loadContactGroups(cw);
             cw.setFlagAllDataInitialized();
         }
         cursor.close();
@@ -164,7 +172,16 @@ public class ContactReader {
             } while (cursor.moveToNext());
             cursor.close();
         }
-
+        selection = ContactsContract.Data.MIMETYPE + " = '" + GroupMembership.CONTENT_ITEM_TYPE + "'";
+        cursor = resolver.query(ContactsContract.Data.CONTENT_URI,projectionGroups,selection,null,null);
+        if(cursor != null) {
+            int indexGroupId = cursor.getColumnIndex(GroupMembership.GROUP_ROW_ID);
+            int indexContact = cursor.getColumnIndex(Event.CONTACT_ID);
+            if (cursor.moveToFirst()) do {
+                handleCursorGroupMembers(cursor,indexContact,indexGroupId);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
     }
 
     private boolean hasPermission(){
@@ -221,6 +238,21 @@ public class ContactReader {
             } while (datesCursor.moveToNext());
         }
         datesCursor.close();
+    }
+    private void loadContactGroups(ContactWrapper cw){
+        gr.loadGroups();
+        ContentResolver contentResolver = context.getContentResolver();
+        String selection = ContactsContract.Data.MIMETYPE + " = '" + GroupMembership.CONTENT_ITEM_TYPE + "' AND " + GroupMembership.RAW_CONTACT_ID + " = " + cw.getDeviceContactId();
+        Cursor groupMemberCursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projectionGroups,selection,null,null);
+        if(groupMemberCursor == null) return;
+        int indexGroupId = groupMemberCursor.getColumnIndex(GroupMembership.GROUP_ROW_ID);
+        int indexContact = groupMemberCursor.getColumnIndex(Event.CONTACT_ID);
+        if(groupMemberCursor.getColumnCount() > 0 && groupMemberCursor.moveToFirst()) {
+            do {
+                handleCursorGroupMembers(groupMemberCursor,indexContact,indexGroupId);
+            } while (groupMemberCursor.moveToNext());
+        }
+        groupMemberCursor.close();
     }
 
     private boolean updateDate(){
@@ -290,5 +322,10 @@ public class ContactReader {
             Log.d("malte", "Custom Event on " + cursor.getString(indexStartDate) + " labeled :" + label );
             //TODO handle custom Event
         }
+    }
+    private void handleCursorGroupMembers(Cursor cursor, int indexContactId, int indexGroupId){
+        GroupWrapper group = gr.getGroup(cursor.getInt(indexGroupId));
+        ContactWrapper con = previouslyLoadedContacts.get(cursor.getLong(indexContactId)).changeGroupMembership(group,true);
+        group.addMember(con);
     }
 }

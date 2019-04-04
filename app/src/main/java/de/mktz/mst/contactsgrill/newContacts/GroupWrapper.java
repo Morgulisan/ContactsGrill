@@ -1,22 +1,42 @@
 package de.mktz.mst.contactsgrill.newContacts;
 
-public class GroupWrapper {
+import java.util.LinkedList;
+
+class GroupWrapper {
 
     private int id;
     private String title;
+    private LinkedList<ContactWrapper> members;
 
-    public GroupWrapper(int id, String title){
+    GroupWrapper(int id, String title){
         this.id = id;
         this.title = title;
         GroupReader.registerGroup(this);
+        members = new LinkedList<>();
     }
 
 
-    public int getGroupId(){
+    int getGroupId(){
         return  id;
     }
 
-    public String getGroupTitle(){
+    GroupWrapper addMember(ContactWrapper contact){
+        this.members.add(contact);
+        return this;
+    }
+
+
+    String getGroupTitle(){
         return title;
     }
+
+    boolean isMemberOf(ContactWrapper contact){
+        return members.contains(contact);
+    }
+
+    LinkedList<ContactWrapper> getAllMembers(){
+        return (LinkedList<ContactWrapper>) members; //TODO data protection, clone?
+    }
+
+
 }
