@@ -72,7 +72,7 @@ public class ContactSearch extends AppCompatActivity {
 
     public void contactsToMenu(){
         ContactReader reader = new ContactReader(this);
-        dataModels = reader.getListOfAllContacts(DB_Handler.SortParameter.SORT_ADDED);
+        dataModels = reader.getListOfAllContacts(ContactReader.SortParameter.SORT_ADDED);
         adapter = new  CustomAdapter(dataModels, getApplicationContext(), CustomAdapter.ViewType.VIEW_TOGGLE_TRACK);
         listView.setAdapter(adapter);
     }

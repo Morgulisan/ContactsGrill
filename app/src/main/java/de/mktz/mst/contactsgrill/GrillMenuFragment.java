@@ -98,7 +98,7 @@ public class GrillMenuFragment extends Fragment {
                 dataModels = viewModel.getDatabaseHandler().getListOfAllContacts();
                 break;
             case "3":
-                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(DB_Handler.SortParameter.SORT_BIRTHDAY);
+                dataModels = viewModel.getDatabaseHandler().getListOfAllContacts(ContactReader.SortParameter.SORT_BIRTHDAY);
                 break;
             case "4":
                 new ContactReader(getContext()).fillContactData();
