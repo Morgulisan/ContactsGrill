@@ -27,6 +27,12 @@ import static android.support.v4.content.ContextCompat.startActivity;
 
 public class ContactReader {
 
+    public enum SortParameter{
+        SORT_NAME,
+        SORT_ADDED,
+        SORT_BIRTHDAY
+    }
+
     private static final String[] projectionPhone = {
         Phone.CONTACT_ID
         ,Phone.NUMBER
@@ -86,8 +92,9 @@ public class ContactReader {
         previouslyLoadedContacts.put(id,cw);
         return cw;
     }
-    public List<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){
-        //TODO WHERE only not in previouslyLoadedContacts, Remove DB_Handler
+
+    public List<ContactWrapper> getListOfAllContacts(SortParameter sortParameter){
+        //TODO WHERE only not in previouslyLoadedContacts
         if(!hasPermission()) return null; //TODO throw exception?
         gr.loadGroups();
         String[] projection = {
@@ -123,10 +130,10 @@ public class ContactReader {
         return r;
     }
 
-    public List<ContactWrapper> getListOfTrackedContacts(DB_Handler.SortParameter sortParameter){
+    public List<ContactWrapper> getListOfTrackedContacts(SortParameter sortParameter){
         return getListOfAllContacts(sortParameter);
     }
-    public List<ContactWrapper> getListOfIncompleteContacts(DB_Handler.SortParameter sortParameter){
+    public List<ContactWrapper> getListOfIncompleteContacts(SortParameter sortParameter){
         return getListOfAllContacts(sortParameter);
     }
     public List<ContactWrapper> getListOfTrackedContacts(){
@@ -142,10 +149,11 @@ public class ContactReader {
     }
 
     public void fillContactData(){
-        fillContactData(null);
+        fillContactData(null,null);
     }
-    public void fillContactData(@Nullable String selection){ //TODO refactor ids to accept lists ?
+    public void fillContactData(@Nullable String selection,@Nullable String[] args){ //TODO refactor ids to accept lists ?
         if(selection == null){
+            args = null;
             if(previouslyLoadedContacts.size() == 0) return;
             final StringBuilder builder = new StringBuilder().append('('); //TODO use TextUtils.join( instead
             for(int i = 0; i<previouslyLoadedContacts.size();i++) { //TODO off by one?
@@ -160,7 +168,7 @@ public class ContactReader {
             selection = Phone.CONTACT_ID + " IN " + builder.toString();
         }
         ContentResolver resolver = context.getContentResolver();
-        Cursor cursor = resolver.query(Phone.CONTENT_URI, projectionPhone,selection,null,null);
+        Cursor cursor = resolver.query(Phone.CONTENT_URI, projectionPhone,selection,args,null);
         if(cursor != null) {
             int indexNumber = cursor.getColumnIndex(Phone.NUMBER);
             int indexType = cursor.getColumnIndex(Phone.TYPE);
@@ -194,7 +202,6 @@ public class ContactReader {
     }
 
     private boolean hasPermission(){
-
         if (context.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED &&
             context.checkSelfPermission(Manifest.permission.READ_CONTACTS ) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new Activity(),new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS}, 1160); //TODO WTF new Activity?
@@ -319,13 +326,30 @@ public class ContactReader {
     }
 
 
-    boolean addContactToGroup(ContactWrapper contact,Integer groupID){
-        if(GroupReader.getGroup(groupID).getAllMembers().contains(contact)) return false;
+    private boolean addContactToGroup(ContactWrapper contact,Integer groupID){
+        if(GroupReader.getGroup(groupID).getAllMembers().contains(contact)) return false; //TODO Change
+        if(removeContactFromGroup(contact,groupID)) Log.d("malte", "#khsfi Contact was in Group while adding but not caught");
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         ops.add(android.content.ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValue(ContactsContract.Data.MIMETYPE,GroupMembership.CONTENT_ITEM_TYPE)
                 .withValue(GroupMembership.RAW_CONTACT_ID,contact.getDeviceContactId())
                 .withValue(GroupMembership.GROUP_ROW_ID,groupID)
+                .build());
+        try {
+            context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            return true;
+        }catch (Exception e){
+            Log.e("malte", "Error occured at #efig906 : " + e.getMessage());
+        }
+        return false;
+    }
+
+    private boolean removeContactFromGroup(ContactWrapper contact, Integer groupID){
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        ops.add(android.content.ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+                .withSelection(ContactsContract.Data.MIMETYPE + " = '" + GroupMembership.CONTENT_ITEM_TYPE + "' AND "
+                    + GroupMembership.RAW_CONTACT_ID + " = ? AND "
+                    + GroupMembership.GROUP_ROW_ID + " = ?", new String[] { String.valueOf(contact.getDeviceContactId()), String.valueOf(groupID) })
                 .build());
         try {
             context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
@@ -357,7 +381,7 @@ public class ContactReader {
         }
     }
     private void handleCursorGroupMembers(Cursor cursor, int indexContactId, int indexGroupId){
-        GroupWrapper group = gr.getGroup(cursor.getInt(indexGroupId));
+        GroupWrapper group = GroupReader.getGroup(cursor.getInt(indexGroupId));
         ContactWrapper con = previouslyLoadedContacts.get(cursor.getLong(indexContactId)).setGroupMembership(group,true);
         group.addMember(con);
     }

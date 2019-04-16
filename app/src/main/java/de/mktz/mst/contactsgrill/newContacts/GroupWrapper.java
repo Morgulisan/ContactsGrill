@@ -1,6 +1,8 @@
 package de.mktz.mst.contactsgrill.newContacts;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 class GroupWrapper {
 
@@ -10,7 +12,7 @@ class GroupWrapper {
 
     GroupWrapper(int id, String title){
         this.id = id;
-        this.title = title;
+        this.title = Objects.requireNonNull(title);
         GroupReader.registerGroup(this);
         members = new LinkedList<>();
     }
@@ -25,17 +27,13 @@ class GroupWrapper {
         return this;
     }
 
-
     String getGroupTitle(){
         return title;
     }
 
-    boolean isMemberOf(ContactWrapper contact){
-        return members.contains(contact);
-    }
-
-    LinkedList<ContactWrapper> getAllMembers(){
-        return (LinkedList<ContactWrapper>) members; //TODO data protection, clone?
+    @SuppressWarnings("unchecked")
+    List<ContactWrapper> getAllMembers() {
+        return (List<ContactWrapper>) members.clone();
     }
 
 
