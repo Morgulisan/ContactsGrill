@@ -12,6 +12,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler; //TODO Remove
 import de.mktz.mst.contactsgrill.newContacts.ContactReader;
@@ -22,7 +23,7 @@ public class ContactSearch extends AppCompatActivity {
     //private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 1160;
 
 
-    ArrayList<ContactWrapper> dataModels;
+    List<ContactWrapper> dataModels;
     ListView listView;
     protected CustomAdapter adapter;
     private int sortMode = 0;
@@ -76,7 +77,7 @@ public class ContactSearch extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
-    public static void sortContacts(ArrayList<ContactWrapper> list, int sortType){
+    public static void sortContacts(List<ContactWrapper> list, int sortType){
         switch (sortType) {
             case 0:
                 Collections.sort(list, new Comparator<ContactWrapper>() {

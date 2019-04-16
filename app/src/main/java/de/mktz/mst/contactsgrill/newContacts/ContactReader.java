@@ -15,10 +15,12 @@ import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler;
+
 import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static android.support.v4.content.ContextCompat.startActivity;
 
@@ -55,6 +57,7 @@ public class ContactReader {
 
     public ContactWrapper getContactByID(Long id) {
         if(!hasPermission()) return null; //TODO throw exception?
+        gr.loadGroups();
         ContactWrapper cw = null;
         if(previouslyLoadedContacts.get(id) != null){
             cw = previouslyLoadedContacts.get(id);
@@ -83,8 +86,10 @@ public class ContactReader {
         previouslyLoadedContacts.put(id,cw);
         return cw;
     }
-    public ArrayList<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){
+    public List<ContactWrapper> getListOfAllContacts(DB_Handler.SortParameter sortParameter){
         //TODO WHERE only not in previouslyLoadedContacts, Remove DB_Handler
+        if(!hasPermission()) return null; //TODO throw exception?
+        gr.loadGroups();
         String[] projection = {
                 ContactsContract.Contacts._ID
                 ,ContactsContract.Contacts.DISPLAY_NAME
@@ -118,19 +123,21 @@ public class ContactReader {
         return r;
     }
 
-    public ArrayList<ContactWrapper> getListOfTrackedContacts(DB_Handler.SortParameter sortParameter){
+    public List<ContactWrapper> getListOfTrackedContacts(DB_Handler.SortParameter sortParameter){
         return getListOfAllContacts(sortParameter);
     }
-    public ArrayList<ContactWrapper> getListOfIncompleteContacts(DB_Handler.SortParameter sortParameter){
+    public List<ContactWrapper> getListOfIncompleteContacts(DB_Handler.SortParameter sortParameter){
         return getListOfAllContacts(sortParameter);
     }
-    public ArrayList<ContactWrapper> getListOfTrackedContacts(){
+    public List<ContactWrapper> getListOfTrackedContacts(){
+        if(!hasPermission()) return new ArrayList<>();
+        getListOfAllContacts(); //TODO only load required
+        return GroupReader.getGroup(GroupReader.TRACK_GROUP_NAME).getAllMembers();
+    }
+    public List<ContactWrapper> getListOfIncompleteContacts(){
         return getListOfAllContacts(null);
     }
-    public ArrayList<ContactWrapper> getListOfIncompleteContacts(){
-        return getListOfAllContacts(null);
-    }
-    public ArrayList<ContactWrapper> getListOfAllContacts(){
+    public List<ContactWrapper> getListOfAllContacts(){
         return getListOfAllContacts(null);
     }
 
@@ -139,6 +146,7 @@ public class ContactReader {
     }
     public void fillContactData(@Nullable String selection){ //TODO refactor ids to accept lists ?
         if(selection == null){
+            if(previouslyLoadedContacts.size() == 0) return;
             final StringBuilder builder = new StringBuilder().append('('); //TODO use TextUtils.join( instead
             for(int i = 0; i<previouslyLoadedContacts.size();i++) { //TODO off by one?
                 //TODO statt diesem Umweg direkt uninizialisierte IDs speichern?
@@ -148,6 +156,7 @@ public class ContactReader {
                 }
             }
             builder.delete(builder.length()-1,builder.length()).append(')');
+            if(builder.toString().equals(")")) return;
             selection = Phone.CONTACT_ID + " IN " + builder.toString();
         }
         ContentResolver resolver = context.getContentResolver();
@@ -195,8 +204,9 @@ public class ContactReader {
     }
     public void updateContactTrack(Long contactId, boolean track){
         //TODO Implement
+        addContactToGroup(getContactByID(contactId),GroupReader.getGroup(GroupReader.TRACK_GROUP_NAME).getGroupId()); //TODO beautify
         Log.d("malte","Switched tracking of contact " + contactId + " to " + track);
-        Log.e("malte","updateContactTrack not implemented" );
+        Log.e("malte","updateContactTrack only adding not removing from track" );
     }
 
     private void loadContactNumbers(ContactWrapper cw){
@@ -246,7 +256,7 @@ public class ContactReader {
         Cursor groupMemberCursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projectionGroups,selection,null,null);
         if(groupMemberCursor == null) return;
         int indexGroupId = groupMemberCursor.getColumnIndex(GroupMembership.GROUP_ROW_ID);
-        int indexContact = groupMemberCursor.getColumnIndex(Event.CONTACT_ID);
+        int indexContact = groupMemberCursor.getColumnIndex(GroupMembership.CONTACT_ID);
         if(groupMemberCursor.getColumnCount() > 0 && groupMemberCursor.moveToFirst()) {
             do {
                 handleCursorGroupMembers(groupMemberCursor,indexContact,indexGroupId);
@@ -294,6 +304,10 @@ public class ContactReader {
                     .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, number)
                     .build());
 
+            ops.add(android.content.ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                    .withValue(GroupMembership.CONTACT_ID,ContactId)
+                    .withValue(GroupMembership.GROUP_ROW_ID,8)
+                    .build());
             try {
                 context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
                 Log.d("malte","Updated contact");
@@ -303,6 +317,25 @@ public class ContactReader {
         }
 
     }
+
+
+    boolean addContactToGroup(ContactWrapper contact,Integer groupID){
+        if(GroupReader.getGroup(groupID).getAllMembers().contains(contact)) return false;
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        ops.add(android.content.ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValue(ContactsContract.Data.MIMETYPE,GroupMembership.CONTENT_ITEM_TYPE)
+                .withValue(GroupMembership.RAW_CONTACT_ID,contact.getDeviceContactId())
+                .withValue(GroupMembership.GROUP_ROW_ID,groupID)
+                .build());
+        try {
+            context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            return true;
+        }catch (Exception e){
+            Log.e("malte", "Error occured at #efig906 : " + e.getMessage());
+        }
+        return false;
+    }
+
 
     private void handleCursorPhone(Cursor cursor, int indexContactId, int indexNumber, int indexTyp){
         previouslyLoadedContacts.get(cursor.getLong(indexContactId)).addPhoneNumber(cursor.getString(indexNumber).replaceAll("\\s+",""));
@@ -325,7 +358,7 @@ public class ContactReader {
     }
     private void handleCursorGroupMembers(Cursor cursor, int indexContactId, int indexGroupId){
         GroupWrapper group = gr.getGroup(cursor.getInt(indexGroupId));
-        ContactWrapper con = previouslyLoadedContacts.get(cursor.getLong(indexContactId)).changeGroupMembership(group,true);
+        ContactWrapper con = previouslyLoadedContacts.get(cursor.getLong(indexContactId)).setGroupMembership(group,true);
         group.addMember(con);
     }
 }

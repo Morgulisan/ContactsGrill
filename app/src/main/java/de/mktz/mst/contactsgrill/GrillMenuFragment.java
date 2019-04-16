@@ -16,6 +16,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler;
 import de.mktz.mst.contactsgrill.newContacts.ContactReader;
@@ -41,7 +42,7 @@ public class GrillMenuFragment extends Fragment {
     private GrillMenuViewModel viewModel;
     private static int sortMode = 0;
 
-    ArrayList<ContactWrapper> dataModels;
+    List<ContactWrapper> dataModels;
     CustomAdapter adapter;
     ListView listView;
     FloatingActionButton fab;
@@ -136,7 +137,7 @@ public class GrillMenuFragment extends Fragment {
 
 
 
-    public static void sortContacts(ArrayList<ContactWrapper> list, int sortType){
+    public static void sortContacts(List<ContactWrapper> list, int sortType){
         switch (sortType) {
             case 0:
                 Collections.sort(list, new Comparator<ContactWrapper>() {

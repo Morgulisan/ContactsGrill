@@ -80,7 +80,7 @@ public class ContactWrapper {
         Log.e("malte","setLastContactTime() does currently not work, set time to " + lastContactTime);
         return this;
     }
-    public ContactWrapper changeGroupMembership(GroupWrapper group, boolean state){
+    public ContactWrapper setGroupMembership(GroupWrapper group, boolean state){
         if(state){
             if(groupMembership == null){
                 groupMembership = new ArrayList<>();

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import de.mktz.mst.contactsgrill.database.DB_Handler;
@@ -54,7 +55,7 @@ public class CustomAdapter extends ArrayAdapter<ContactWrapper> implements View.
         VIEW_PROGRESS
     }
 
-    CustomAdapter(ArrayList<ContactWrapper> data, Context context, ViewType vt) {
+    CustomAdapter(List<ContactWrapper> data, Context context, ViewType vt) {
         super(context, R.layout.list_contact_card, data);
         //this.dataSet = data;
         activityContext=context;
